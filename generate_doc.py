@@ -29,7 +29,6 @@ rcParams.update(config)
 plt.rcParams['axes.unicode_minus'] = False
 
 
-
 ########################## 正式开始网页！###################
 st.title('风场数据分析报告')
 st.markdown('# 查看原始数据')
@@ -54,20 +53,27 @@ if phase_name=='昆头岭明阳':
     cabin_north_angle = '平均机舱对北角度'
     wind_north_angle = '平均风向对北角度'
     generator_speed_pn = '平均发电机转速1'
+    theory_pw_cur = pd.read_excel('D:/1 新天/数字运营部 任务/昆头岭手动分析/理论功率曲线.xlsx')
+
 
 ROOT_PATH = st.sidebar.text_input('文件路径')
-raw_data_path = ROOT_PATH + st.sidebar.selectbox(label='选择原始数据文件',
-                           options=os.listdir(ROOT_PATH))
-pw_cur_path = 'pw_theory_cur/'+st.sidebar.selectbox(label='选择理论功率数据文件',
-                           options=os.listdir('pw_theory_cur/'))
+
+
+# st.file_uploader("file path")
+if ROOT_PATH is not None:
+    raw_data_path = ROOT_PATH
+else:
+    ROOT_PATH = 'D:/1 新天\数字运营部 任务\昆头岭手动分析/12月/'
+    raw_data_path = ROOT_PATH+'raw_data.csv'
+
 
 @st.cache_data
 def load_data(url):
     df = pd.read_csv(url)
     return df
 
-raw_data = load_data(raw_data_path if raw_data_path else 'D:/1 新天\数字运营部 任务\昆头岭手动分析/12月/raw_data.csv')
-theory_pw_cur = pd.read_excel(pw_cur_path if pw_cur_path else 'D:/1 新天/数字运营部 任务/昆头岭手动分析/理论功率曲线.xlsx')
+raw_data = load_data(raw_data_path)
+
 
 ####
 site_instance = site_model(raw_data,theory_pw_cur)
@@ -150,16 +156,27 @@ for i,figs in enumerate(fig_ls_blade_time):
         st.pyplot(figs)
 
 
-save = st.button('save_all_results')
-if save:
-    site_instance.save_figures(ROOT_PATH+'limit_power/',fig_limit_power,'limit_power.png')
-    site_instance.save_data(ROOT_PATH+'转矩控制/',torque_results_df,'斜率结果.xlsx')
-    for i,fig in enumerate(torque_fig_ls):
-        site_instance.save_figures(ROOT_PATH+'转矩控制/',fig,f'{i}.jpg')
-    site_instance.save_data(ROOT_PATH+'偏航对风/',yaw_result_df,'预警结果.xlsx')
-    site_instance.save_data(ROOT_PATH+'桨叶角度/',blade_result_df,'桨叶角度最小值.xlsx')
-    for i,fig in enumerate(fig_ls_blade):
-        site_instance.save_figures(ROOT_PATH+f'桨叶角度/',fig,f'功率-桨叶角度{i}.jpg')
-        site_instance.save_figures(ROOT_PATH+'桨叶角度/',fig_ls_blade_time[i],f'桨叶角度-时间{i}.jpg')
 
+# from docx import Document
+# import math
+# from docx.shared import Inches
+
+# document = Document()
+# document.add_heading('3.1 大部件温度', level=2)
+
+# document.add_heading('3.2 控制特性', level=2)
+
+
+# # 图片地址
+
+# # 向上取整 
+# ceil = math.ceil(len(torque_fig_ls)/4)
+# # 生成一个ceil行2列的表格,保证表格数量 > 图片数量
+# table = document.add_table(rows=ceil, cols=2)
+
+# # 对表格进行枚举
+# for i,cell in enumerate(table._cells):
+# 	# 这个地方尤其注意 必须先拿到 paragraph 对象 才能run
+#     run = cell.add_paragraph().add_run()
+#     run.add_picture(torque_fig_ls[i], width=Inches(2.25))
 
