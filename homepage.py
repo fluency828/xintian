@@ -93,44 +93,8 @@ st.write(site_instance.theory_pw_cur)
 fig_limit_power,size_changing = site_instance.limit_power()
 ####
 
-sslist = ['phase_name',
-          'raw_data',
-          'theory_pw_cur',
-          'instance',
-          'limit_pwer_size_changing',
-          'limit_power_fig',
-        #   'gen_data',
-        #   'torque_speed_data',
-          'torque_results_df',
-          'torque_fig_ls',
-          'yaw_result_df',
-          'yaw_data',
-          'yaw_angle_hist',
-          'yaw_result_list',
-          'blade_data',
-          'blade_result_df',
-          'fig_ls_blade',
-          'fig_ls_blade_time',
-          'fig_ls_blade_type']
-
-for ss in sslist:
-    if ss not in st.session_state:
-        st.session_state[ss]=''
-
-st.session_state.raw_data = raw_data
-st.session_state.theory_pw_cur = theory_pw_cur
-st.session_state.phase_name = phase_name
-
-st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{st.session_state.limit_power_size_changing}')
-st.pyplot(st.session_state.limit_power_fig)
-
-save_cache = st.button('Save cache')
-
-if save_cache:
-    st.session_state.instance = site_instance
-    st.session_state.limit_power_size_changing = size_changing
-    st.session_state.limit_power_fig= fig_limit_power
-
+st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{size_changing}')
+st.pyplot(fig_limit_power)
 
 st.markdown('## 转矩控制')
 
@@ -139,38 +103,28 @@ torque_results_df,torque_fig_ls = site_instance.torque_speed_warning()
 ####
 
 
-# st.session_state.torque_speed_data = site_instance.torque_speed_data
-st.session_state.torque_result_df =  torque_results_df
-st.session_state.torque_fig_ls = torque_fig_ls
-
-st.markdown(f'去除转速大于2000后数据大小为{st.session_state.instance.torque_speed_data.shape}')
-st.write(st.session_state.instance.torque_speed_data[[type_pn,site_instance.generator_torque_pn,generator_speed_pn,site_instance.generator_speed_square,]].groupby(type_pn).describe().T)
+st.markdown(f'去除转速大于2000后数据大小为{site_instance.torque_speed_data.shape}')
+st.write(site_instance.torque_speed_data[[type_pn,site_instance.generator_torque_pn,generator_speed_pn,site_instance.generator_speed_square,]].groupby(type_pn).describe().T)
 
 col_ls = st.columns(4)
-for i,figs in enumerate(st.session_state.torque_fig_ls):
+for i,figs in enumerate(torque_fig_ls):
     with col_ls[i%4]:
         st.pyplot(figs)
 
 st.markdown('转矩控制斜率结果')
-st.write(st.session_state.torque_results_df)
-st.button('rerun')
+st.write(torque_results_df)
+
 st.markdown('## 偏航对风')
 
 ####
 yaw_result_df,yaw_angle_hist,yaw_result_list = site_instance.yaw_warning()
 ####
 
-st.session_state.yaw_result_df = yaw_result_df
-st.session_state.yaw_angle_hist = yaw_angle_hist
-st.session_state.yaw_result_list = yaw_result_list
-st.session_state.yaw_data = site_instance.yaw_data
+st.markdown(f'剔除限功率点后数据形状{site_instance.gen_data.shape}')
 
-st.markdown(f'剔除限功率点后数据形状{st.session_state.gen_data.shape}')
+st.markdown(f'仅保留15°夹角以内数据后的数据大小{site_instance.yaw_data.shape}')
 
-st.markdown(f'仅保留15°夹角以内数据后的数据大小{st.session_state.yaw_data.shape}')
-
-st.write(st.session_state.yaw_result_df)
-
+st.write(yaw_result_df)
 
 st.markdown('## 桨叶角度对零')
 
