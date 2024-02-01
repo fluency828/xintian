@@ -17,7 +17,7 @@ from matplotlib import rcParams
 # import zipfile
 # from pathlib import Path
 from site_function import Kuntouling_mingyang
-
+from utils import save_data,save_figures
 
 config = {
     "font.family":'serif',
@@ -152,14 +152,14 @@ for i,figs in enumerate(fig_ls_blade_time):
 
 save = st.button('save_all_results')
 if save:
-    site_instance.save_figures(ROOT_PATH+'limit_power/',fig_limit_power,'limit_power.png')
-    site_instance.save_data(ROOT_PATH+'转矩控制/',torque_results_df,'斜率结果.xlsx')
+    save_figures(ROOT_PATH+'limit_power/',fig_limit_power,'limit_power.png')
+    save_data(ROOT_PATH+'转矩控制/',torque_results_df,'斜率结果.xlsx')
     for i,fig in enumerate(torque_fig_ls):
-        site_instance.save_figures(ROOT_PATH+'转矩控制/',fig,f'{i}.jpg')
-    site_instance.save_data(ROOT_PATH+'偏航对风/',yaw_result_df,'预警结果.xlsx')
-    site_instance.save_data(ROOT_PATH+'桨叶角度/',blade_result_df,'桨叶角度最小值.xlsx')
+        save_figures(ROOT_PATH+'转矩控制/',fig,f'{i}.jpg')
+    save_data(ROOT_PATH+'偏航对风/',yaw_result_df,'预警结果.xlsx')
+    save_data(ROOT_PATH+'桨叶角度/',blade_result_df,'桨叶角度最小值.xlsx')
     for i,fig in enumerate(fig_ls_blade):
-        site_instance.save_figures(ROOT_PATH+f'桨叶角度/',fig,f'功率-桨叶角度{i}.jpg')
-        site_instance.save_figures(ROOT_PATH+'桨叶角度/',fig_ls_blade_time[i],f'桨叶角度-时间{i}.jpg')
+        save_figures(ROOT_PATH+f'桨叶角度/',fig,f'功率-桨叶角度{i}.jpg')
+        save_figures(ROOT_PATH+'桨叶角度/',fig_ls_blade_time[i],f'桨叶角度-时间{i}.jpg')
 
 
