@@ -72,6 +72,7 @@ def load_data(url):
 
 raw_data = load_data(raw_data_path)
 
+
 ####
 site_instance = site_model(raw_data,theory_pw_cur)
 ####
@@ -92,10 +93,14 @@ st.write(site_instance.theory_pw_cur)
 fig_limit_power,size_changing = site_instance.limit_power()
 ####
 
-sslist = ['limit_pwer_size_changing',
+sslist = ['phase_name',
+          'raw_data',
+          'theory_pw_cur',
+          'instance',
+          'limit_pwer_size_changing',
           'limit_power_fig',
-          'gen_data',
-          'torque_data',
+        #   'gen_data',
+        #   'torque_speed_data',
           'torque_results_df',
           'torque_fig_ls',
           'yaw_result_df',
@@ -112,12 +117,20 @@ for ss in sslist:
     if ss not in st.session_state:
         st.session_state[ss]=''
 
-st.session_state.limit_power_size_changing = size_changing
-st.session_state.limit_power_fig= fig_limit_power
-st.session_state.gen_data = site_instance.gen_data
+st.session_state.raw_data = raw_data
+st.session_state.theory_pw_cur = theory_pw_cur
+st.session_state.phase_name = phase_name
 
 st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{st.session_state.limit_power_size_changing}')
 st.pyplot(st.session_state.limit_power_fig)
+
+save_cache = st.button('Save cache')
+
+if save_cache:
+    st.session_state.instance = site_instance
+    st.session_state.limit_power_size_changing = size_changing
+    st.session_state.limit_power_fig= fig_limit_power
+
 
 st.markdown('## 转矩控制')
 
@@ -126,12 +139,12 @@ torque_results_df,torque_fig_ls = site_instance.torque_speed_warning()
 ####
 
 
-st.session_state.torque_data = site_instance.torque_speed_data
+# st.session_state.torque_speed_data = site_instance.torque_speed_data
 st.session_state.torque_result_df =  torque_results_df
 st.session_state.torque_fig_ls = torque_fig_ls
 
-st.markdown(f'去除转速大于2000后数据大小为{st.session_state.torque_data.shape}')
-st.write(st.session_state.torque_data[[type_pn,site_instance.generator_torque_pn,generator_speed_pn,site_instance.generator_speed_square,]].groupby(type_pn).describe().T)
+st.markdown(f'去除转速大于2000后数据大小为{st.session_state.instance.torque_speed_data.shape}')
+st.write(st.session_state.instance.torque_speed_data[[type_pn,site_instance.generator_torque_pn,generator_speed_pn,site_instance.generator_speed_square,]].groupby(type_pn).describe().T)
 
 col_ls = st.columns(4)
 for i,figs in enumerate(st.session_state.torque_fig_ls):
