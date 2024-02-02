@@ -55,11 +55,14 @@ if phase_name=='昆头岭明阳':
     wind_north_angle = '平均风向对北角度'
     generator_speed_pn = '平均发电机转速1'
 
-ROOT_PATH = st.sidebar.text_input('文件路径')
-raw_data_path = ROOT_PATH + st.sidebar.selectbox(label='选择原始数据文件',
-                           options=os.listdir(ROOT_PATH))
-pw_cur_path = 'pw_theory_cur/'+st.sidebar.selectbox(label='选择理论功率数据文件',
-                           options=os.listdir('pw_theory_cur/'))
+# ROOT_PATH = st.sidebar.text_input('文件路径')
+# raw_data_path = ROOT_PATH + st.sidebar.selectbox(label='选择原始数据文件',
+#                            options=os.listdir(ROOT_PATH))
+# pw_cur_path = 'pw_theory_cur/'+st.sidebar.selectbox(label='选择理论功率数据文件',
+#                            options=os.listdir('pw_theory_cur/'))
+
+raw_data_path = st.file_uploader('上传原始数据')
+pw_cur_path = st.file_uploader('上传理论功率数据')
 
 @st.cache_data
 def load_data(url):
