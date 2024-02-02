@@ -69,8 +69,8 @@ def load_data(url):
     df = pd.read_csv(url)
     return df
 
-raw_data = load_data(raw_data_path if raw_data_path else 'D:/1 新天\数字运营部 任务\昆头岭手动分析/12月/raw_data.csv')
-theory_pw_cur = pd.read_excel(pw_cur_path if pw_cur_path else 'D:/1 新天/数字运营部 任务/昆头岭手动分析/理论功率曲线.xlsx')
+raw_data = load_data(raw_data_path)
+theory_pw_cur = pd.read_excel(pw_cur_path)
 
 ####
 site_instance = site_model(raw_data,theory_pw_cur)
