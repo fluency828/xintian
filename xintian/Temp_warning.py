@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.pyplot import MultipleLocator
-import mplcyberpunk
+# import mplcyberpunk
 import sys
 import plotly.express as px
 import matplotlib.dates as mdate
