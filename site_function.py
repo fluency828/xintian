@@ -1,7 +1,7 @@
 # import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as figure
+# import matplotlib.pyplot as figure
 
 import sys
 # sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
@@ -220,17 +220,6 @@ class Kuntouling_mingyang():
         blade_result_df = pd.DataFrame(result_list)
         blade_result_df.columns = ['风机号','风机型号','桨叶角度最小值']
         return blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type
-
-def save_figures(path,figure,filename):
-    if not os.path.exists(path):
-        os.makedirs(path)
-    save_path = os.path.join(path,filename)
-    figure.savefig(save_path,bbox_inches='tight',dpi=500,facecolor='white')
-def save_data(path,data,filename):
-    if not os.path.exists(path):
-        os.makedirs(path)
-    save_path = os.path.join(path,filename)
-    data.to_excel(save_path,index=False)
 
 
 
