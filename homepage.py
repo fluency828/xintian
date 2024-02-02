@@ -7,7 +7,7 @@ import sys
 # sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
 # from xintian.full_power_time import gen_full_time
 # from xintian.Temp_warning import plot_scene,plotly_scene,plot_comparison_divide
-import plotly.express as px
+# import plotly.express as px
 import os
 import matplotlib.dates as mdate
 import sys
