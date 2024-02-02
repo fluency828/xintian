@@ -3,15 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-import sys
-# sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
-# from xintian.full_power_time import gen_full_time
-# from xintian.Temp_warning import plot_scene,plotly_scene,plot_comparison_divide
-# import plotly.express as px
 import os
 import matplotlib.dates as mdate
-import sys
-# sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
 from matplotlib import rcParams
 # import io
 # import zipfile
@@ -97,7 +90,7 @@ fig_limit_power,size_changing = site_instance.limit_power()
 st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{size_changing}')
 st.pyplot(fig_limit_power)
 
-st.markdown('## 转矩控制')
+st.markdown('# 转矩控制')
 
 ####
 torque_results_df,torque_fig_ls = site_instance.torque_speed_warning()
@@ -115,7 +108,7 @@ for i,figs in enumerate(torque_fig_ls):
 st.markdown('转矩控制斜率结果')
 st.write(torque_results_df)
 
-st.markdown('## 偏航对风')
+st.markdown('# 偏航对风')
 
 ####
 yaw_result_df,yaw_angle_hist,yaw_result_list = site_instance.yaw_warning()
@@ -127,7 +120,7 @@ st.markdown(f'仅保留15°夹角以内数据后的数据大小{site_instance.ya
 
 st.write(yaw_result_df)
 
-st.markdown('## 桨叶角度对零')
+st.markdown('# 桨叶角度对零')
 
 ####
 blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type = site_instance.blade_warning()
@@ -154,17 +147,44 @@ for i,figs in enumerate(fig_ls_blade_time):
     with col_ls[i%4]:
         st.pyplot(figs)
 
+#####
+site_instance.full_time()
+all_data = site_instance.get_all_data()
+site_instance.set_error_threshold()
+################################
+st.markdown('# 满发后大部件温度预警')
+st.markdown('all data')
+st.write(site_instance.all_data.describe())
 
-save = st.button('save_all_results')
-if save:
-    save_figures(ROOT_PATH+'limit_power/',fig_limit_power,'limit_power.png')
-    save_data(ROOT_PATH+'转矩控制/',torque_results_df,'斜率结果.xlsx')
-    for i,fig in enumerate(torque_fig_ls):
-        save_figures(ROOT_PATH+'转矩控制/',fig,f'{i}.jpg')
-    save_data(ROOT_PATH+'偏航对风/',yaw_result_df,'预警结果.xlsx')
-    save_data(ROOT_PATH+'桨叶角度/',blade_result_df,'桨叶角度最小值.xlsx')
-    for i,fig in enumerate(fig_ls_blade):
-        save_figures(ROOT_PATH+f'桨叶角度/',fig,f'功率-桨叶角度{i}.jpg')
-        save_figures(ROOT_PATH+'桨叶角度/',fig_ls_blade_time[i],f'桨叶角度-时间{i}.jpg')
+
+
+st.markdown('error threshold')
+st.write(site_instance.scene_df)
+
+if_n = st.selectbox('是否带文字标注',options=[True,False])
+
+generate = st.button('生成图片')
+st.markdown('full power data')
+# st.write(site_instance.full_pw)
+
+Large_components_fig = site_instance.gen_Large_components_temp(if_notation=if_n)
+col_ls = st.columns(2)
+for i,figs in enumerate(Large_components_fig):
+    with col_ls[i%2]:
+        st.pyplot(figs)
+
+
+
+# save = st.button('save_all_results')
+# if save:
+#     save_figures(ROOT_PATH+'limit_power/',fig_limit_power,'limit_power.png')
+#     save_data(ROOT_PATH+'转矩控制/',torque_results_df,'斜率结果.xlsx')
+#     for i,fig in enumerate(torque_fig_ls):
+#         save_figures(ROOT_PATH+'转矩控制/',fig,f'{i}.jpg')
+#     save_data(ROOT_PATH+'偏航对风/',yaw_result_df,'预警结果.xlsx')
+#     save_data(ROOT_PATH+'桨叶角度/',blade_result_df,'桨叶角度最小值.xlsx')
+#     for i,fig in enumerate(fig_ls_blade):
+#         save_figures(ROOT_PATH+f'桨叶角度/',fig,f'功率-桨叶角度{i}.jpg')
+#         save_figures(ROOT_PATH+'桨叶角度/',fig_ls_blade_time[i],f'桨叶角度-时间{i}.jpg')
 
 

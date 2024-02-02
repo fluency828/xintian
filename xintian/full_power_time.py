@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.pyplot import MultipleLocator
-import mplcyberpunk
 import plotly.express as px
 
 
@@ -25,6 +24,7 @@ def gen_full_time(dataframe,threshold = 50,full_pw = 4000,Pw_pn='平均电网有
     -----------
     返回新的dataframe,增加列full_time_pn
     '''
+    dataframe[full_time_pn] = 0
     dataframe['pw_diff'] = full_pw - dataframe[Pw_pn]
     pre_row = None
     for i, row in dataframe.iterrows():

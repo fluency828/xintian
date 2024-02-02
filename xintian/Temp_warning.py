@@ -14,7 +14,8 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
             all_color =None ,point_alpha=1,grid=False,\
             wtg_pn='风机',time_pn='data_time',path=None,title=None,legend_cols = 1,\
             legend_loc = 'lower right',sharpness=200,hlines=[None,None,None,None],\
-            annotation_name=['异常值','告警值','故障值','温升异常值'],notation=True):
+            annotation_name=['异常值','告警值','故障值','温升异常值'],notation=True,\
+            save_fig=True):
     '''
     画出传入风机数据的指定测点的散点图，不同风机用不同颜色标识。
     Parameters
@@ -49,8 +50,10 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
     raw_data = full_pw_df[[wtg_pn,time_pn]+[point_name]]
     y_max = full_pw_df[point_name].max()
     y_min = full_pw_df[point_name].min()
+    # print(point_name,y_max,y_min,full_pw_df[point_name])
     y_axis_min = min(y_min-5,0)
-    use_data = raw_data.pivot(time_pn,wtg_pn)
+    # print(raw_data)
+    use_data = raw_data.pivot(index = time_pn,columns = wtg_pn)
     wtg_list = np.unique(full_pw_df[wtg_pn])
     #### 画图
     if style is not None:
@@ -76,8 +79,6 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
         else:
             ax.scatter(x, y, label=column_name, color=colors[i],edgecolors=edgecolor,s=point_size,alpha=point_alpha)
         # ax.plot(x, y, label=column_name)
-        if style == 'cyberpunk' and glow:
-            mplcyberpunk.make_scatter_glow()
         all_y.append(y.reset_index(drop=True))
     # 设置图形y轴的最大值（如果存在故障值，则最大值为故障值）
     if hlines[-2] is not None:
@@ -141,9 +142,12 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
 
     # 显示图形
     # plt.show()
-    plt.savefig(path,bbox_inches='tight',facecolor='white',dpi=sharpness)
+    if save_fig:
+        plt.savefig(path,bbox_inches='tight',facecolor='white',dpi=sharpness)
+    plt.close()
     # plot_data = pd.DataFrame(all_y).T
-    return pd.DataFrame(all_y).T,fig
+    return fig
+
 
 def plotly_scene(full_pw_df,point_name,ylabel,xlabel,title,\
             # full_pw_pn ='full_time',\
@@ -173,7 +177,7 @@ def plotly_scene(full_pw_df,point_name,ylabel,xlabel,title,\
     use_data = full_pw_df[[wtg_pn,time_pn]+[point_name]]
     y_max = full_pw_df[point_name].max()
     y_min = full_pw_df[point_name].min()
-    use_data = use_data.pivot(time_pn,wtg_pn)
+    use_data = use_data.pivot(index=time_pn,columns=wtg_pn)
     wtg_list = np.unique(full_pw_df[wtg_pn])
     if y_max == np.NaN:
         print('all data NaN')
@@ -210,144 +214,11 @@ def plotly_scene(full_pw_df,point_name,ylabel,xlabel,title,\
 
 # # py.sign_in('221041004','wbZMxMecylzhXahyRIam')
 # # figure = figure.encode('utf-8')
-# unique_url = py.plot_mpl(figure, filename="my first plotly plot")
-def plot_comparison(dataframe,wtg_id,point_names,ylabel,xlabel,style='default',titlesize=28,labelsize=15,point_size =20 ,edgecolor='white',point_alpha=1,grid=False,\
-                    wtg_pn='风机',time_pn='data_time',path=None,title=None,legend_cols=1,legend_loc='lower right',color_map='tab20',sharpness=500,\
-                    abnormal_thre=1.2,continue_nums=3,diff_thre=5,mean_diff_thre=0,vlines=True,divide_thre=1.13):
-    '''
-    一个风机不同测点互相对比, 异常的风机画出散点图，不同测点用不同颜色标识。
-    对比方法：
-    对风机的所有时刻查看是否满足条件： 最大值是否大于最小值的`{abnormal_thre}`倍，且最大值比最小值大`{diff_thre}`，得到原始数据中筛选出的异常的时刻
-    对异常数据进行聚合，得到每次出现异常的开始时间、结束时间、最大最小值的平均距离
-    筛选聚合后的每次异常的平均距离大于`{mean_diff_thre}`，得到满足条件的聚合结果。并计算每个测点的平均值（消除时刻维度）
-    如果没有满足条件的聚合结果，且测点平均值中最大值/最小值 小于`{divide_thre}`则该风机无异常
-    反之认为该风机有异常，画出三相温度的对比图。如果vlines为True则用红色区域标出聚合结果的开始时间和结束时间。
-
-    Parameters
-    ----------
-    - dataframe: 原始数据，一般为可以为满发后的数据，也可以是每个风机都连续的数据
-    - wtg_id: 需要指定风机号
-    - point_names: 需要画图的测点名称列表如 [变桨电机温度1，xxxxxx2，xxxxxx3]
-    - color_map: sns.color_palette参数，如 tab20,rainbow
-    - ylabel: y轴标签名
-    - xlabel: x轴标签名
-    - style: 图片风格，如 default,seaborn,ggplot
-    - titlesize: 标题大小
-    - labelsize: x，y轴标签大小
-    - edgecolor: 散点边缘颜色
-    - glow: 当style选赛博朋克时可以使边缘发光
-    - point_size: 散点大小 如50
-    - all_color: 如果非空则所有风机都用该颜色画图
-    - point_alph：散点透明度 0-1
-    - grid: 是否要网格
-    - time_pn:时间 point name, `str`
-    - wtg_pn: 风机号 point name,`str`
-    - path: 保存图片的路径
-    - title: 图片标题
-    - legend_cols：图例的列数（如果有40个风机需要2-4列才能乘下）
-    - legend_loc: 图例的位置 如 lower right, lower left, upper right, upper left, lower center,...,best
-    - sharpness： 图片清晰度
-    ----------
-    - abnormal_thre: 判断每一时刻该风机所有测点的最大值是否大于最小值的倍数阈值
-    - diff_trhe: 判断每一时刻所有测点最大值是否大于最小值的距离阈值
-    - continue_num: 满足abnormal_thre,diff_thre两个条件的异常情况的连续时刻阈值
-    - mean_diff_thre: 满足以上三个条件，且每次异常的平均差值（对时刻维度做平均）达到该阈值
-    - vlines: 是否对异常情况画图,用红色区域标出异常区域
-    - divided_thre: 所有时刻的各测点平均值排序，最大值/最小值的倍数阈值
-
-    return:
-    ----------
-    返回异常的原始数据 pd.DataFrame
-    返回聚合后的异常原始数据： pd.DataFrame
-    '''    
-
-  
-    data_df = dataframe[dataframe[wtg_pn]==wtg_id].sort_values(by=[wtg_pn,time_pn]).reset_index(drop=True)
-    temp_mean=data_df[point_names].mean(axis=0,)
-    divide = temp_mean.max()/temp_mean.min()
-    # if temp_mean.min()*1.3>temp_mean.max():
-    #     print(f'{wtg_id}风机三个测点均值相差')
-    
-    data_df['max'] = data_df[point_names].max(axis=1,)
-    data_df['min'] = data_df[point_names].min(axis=1,)
-    # print(data_df.head())
-    abnormal_data = data_df[(data_df['max']>abnormal_thre*data_df['min'])&(data_df['max']-data_df['min']>diff_thre)].reset_index()
-    abnormal_data['temp_dif'] = abnormal_data['max']-abnormal_data['min']
-    # abnormal_data = data_df[data_df['max']>5+data_df['min']].reset_index()
-    abnormal_data['row_num'] = np.arange(abnormal_data.shape[0])
-    abnormal_data['index_dif'] = abnormal_data['index']-abnormal_data['row_num']
-    groupby = abnormal_data.groupby('index_dif')
-    alarm_result = groupby.count()[['index']]
-    alarm_result[wtg_pn] = wtg_id
-    alarm_result['start_time'] = groupby.min()[time_pn]
-    alarm_result['end_time'] = groupby.max()[time_pn]
-    alarm_result['temp_dif_mean'] = groupby.mean()['temp_dif']
-    alarm_result['temp_dif_median'] = groupby.median()['max'] - groupby.median()['min']
-    alarm_result = alarm_result[(alarm_result['index']>continue_nums)&(alarm_result['temp_dif_mean']>mean_diff_thre)]
-    if (alarm_result.shape[0]==0) or divide<divide_thre:
-        print(f'congrats! {wtg_id}风机对比无异常')
-        return
-    else:
-        print(f'{wtg_id}风机对比异常')
-        print(f'{wtg_id}风机三个测点均值最大/最小={divide}')
-    if style is not None:
-        plt.style.use(style)
-    plt.rc('font',family = 'YouYuan')
-
-    _,ax = plt.subplots(figsize=(15,8))
-    if grid:
-            plt.grid(True,which='both',ls='dashed')
-        # 定义颜色列表
-        # colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', \
-        #         'pink', 'gray', 'olive', 'cyan', 'magenta', 'yellow','black',\
-        #         'aqua']
-        # colors = sns.color_palette("hls",len(wtg_list))
-    colors = sns.color_palette(color_map,len(point_names))
-    y_max = data_df[point_names].max().max()
-    y_min = data_df[point_names].min().min()
-    for i,pn in enumerate(point_names):
-            y = data_df[pn]
-            if xlabel=='次数':
-                x = np.arange(len(y))
-            elif xlabel=='时间':
-                x=data_df[time_pn]
-            ax.scatter(x, y, label=pn, color=colors[i],edgecolors=edgecolor,s=point_size,alpha=point_alpha)
-    if vlines & (alarm_result.shape[0]!=0):
-        for i,alarm_info in alarm_result.iterrows():
-            _,_,stime,etime,_,_=alarm_info
-            ax.axvspan(stime, etime, alpha=0.2, color='red')
-            # ax.vlines(stime,0,50,linestyles='dotted',colors='red',alpha=0.5,linewidths=1)
-            # ax.vlines(etime,0,50,linestyles='dotted',colors='red',alpha=0.5)
-    ax.set_ylim((y_min-5),(y_max+5))
-    # y_major_locator = MultipleLocator((y_max+5)//20)
-    y_major_locator = MultipleLocator((y_max-y_min+10)//20)
-    ax.yaxis.set_major_locator(y_major_locator)
-    if xlabel=='时间':
-        x_major_locator = mdate.DayLocator(bymonthday=5)
-    elif xlabel=='次数':
-        x_major_locator = MultipleLocator(500)
-    ax.xaxis.set_major_locator(x_major_locator)
-    # 设置横轴和纵轴标签
-    ax.set_xlabel(xlabel,fontdict = {'fontsize':labelsize,'fontweight':'bold'})
-    ax.set_ylabel(ylabel,fontdict = {'fontsize':labelsize,'fontweight':'bold'})
-    if title:
-        ax.set_title(title+f'{round(divide,4)}',fontdict={'fontsize':titlesize,'fontweight':'bold'})
-    # ax.set_title(f'与额定功率差值小于{1000}'+f'{full_time_thre}'+'min后'+point_name)
-
-    ax.legend(ncol=legend_cols,loc=legend_loc)
-    # 显示图形
-    # plt.show()
-    plt.savefig(path,bbox_inches='tight',dpi=sharpness)
-    # 显示图形
-    # plt.show()
-    # plt.savefig(path,bbox_inches='tight',dpi=200)
-    return abnormal_data,alarm_result
-
 
 
 def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None,titlesize=28,labelsize=15,point_size =20 ,edgecolor='white',point_alpha=1,grid=False,\
                     wtg_pn='风机',time_pn='data_time',path=None,title=None,legend_cols=1,legend_loc='lower right',color_map='tab20',sharpness=500,\
-                    divide_thre=1.13,if_hlines=True,notation=True,loc = 'upper right',unit='℃',day_sep=5):
+                    divide_thre=1.13,if_hlines=True,notation=True,loc = 'upper right',unit='℃',day_sep=5,save_fig=True):
     '''
     一个风机不同测点互相对比, 异常的风机画出散点图，不同测点用不同颜色标识。
     对比方法：
@@ -417,7 +288,7 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
             "font.serif": ['SimSun'],
         }
         rcParams.update(config)
-    _,ax = plt.subplots(figsize=(15,8))
+    figure,ax = plt.subplots(figsize=(15,8))
     if grid:
             plt.grid(True,which='both',ls='dashed')
     colors = sns.color_palette(color_map,len(point_names))
@@ -472,9 +343,7 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
     # ax.set_title(f'与额定功率差值小于{1000}'+f'{full_time_thre}'+'min后'+point_name)
 
     ax.legend(ncol=legend_cols,loc=legend_loc)
-    # 显示图形
-    # plt.show()
-    plt.savefig(path,bbox_inches='tight',dpi=sharpness)
-    # 显示图形
-    # plt.show()
-    # plt.savefig(path,bbox_inches='tight',dpi=200)
+    if save_fig:
+        plt.savefig(path,bbox_inches='tight',dpi=sharpness)
+    plt.close()
+    return figure

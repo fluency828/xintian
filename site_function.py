@@ -19,6 +19,8 @@ from xintian.Speed_Torque import rated_speed_torque
 # from xintian.useful_tools import figs2zip
 from xintian.yaw import yaw_result_generate
 from xintian.angle_wind import plot_angle_power
+from xintian.Temp_warning import plot_scene,plot_comparison_divide
+from xintian.full_power_time import gen_full_time
 
 class Kuntouling_mingyang():
     def __init__(self,raw_data,theory_pw_cur,
@@ -50,7 +52,12 @@ class Kuntouling_mingyang():
         self.generator_torque_pn = '平均发电机转矩'
         self.inter_angle = '机舱与风向夹角'
         self.inter_angle_bin = '机舱与风向夹角_bin'
-        
+        self.full_time_pn = 'full_time'
+        self.cabin_temp_pn = cabin_temp_pn
+        self.Large_components_temp_ls = Large_components_temp
+        self.generator_temp_ls = generator_temp
+        self.pitch_motor_temp_ls = pitch_motor_temp
+
         ## 整理原始数据
         self.raw_data = raw_data
         if 'Unnamed: 235' in  self.raw_data.columns:
@@ -61,9 +68,6 @@ class Kuntouling_mingyang():
         ## 理论功率数据
         self.theory_pw_cur = theory_pw_cur
 
-
-    def gen_full_time(self):
-        pass
 
     def limit_power(self,angle_threshold=3,
                     gap_threshold=0.1,
@@ -89,6 +93,35 @@ class Kuntouling_mingyang():
                                               y_pn=self.P_pn)
         size_change = (self.raw_data.shape[0],unlimit_data_size,self.gen_data.shape[0])
         return figure_limit_power,size_change
+    
+    def full_time(self,
+                  pw_diff_threshold=[500,500],
+                  type_ls = ['MySE4.0MW','MySE5.0MW'],
+                  rated_pw_ls = [4000,5000,]):
+        all_wtg = [] 
+        for _,wtg_info in self.wtg_list.iterrows():
+            # print(wtg_info)
+            wtg,type = wtg_info
+            wtg_dataframe = self.raw_data[self.raw_data[self.wtg_pn]==wtg].reset_index(drop=True).sort_values(by=self.time_pn)
+            for j in range(len(type_ls)):
+                if type_ls[j] == type:
+                    df_ft = gen_full_time(wtg_dataframe,
+                                          threshold = pw_diff_threshold[j],
+                                          full_pw=rated_pw_ls[j],
+                                          time_pn = self.time_pn,
+                                          Pw_pn = self.P_pn,
+                                          full_time_pn=self.full_time_pn)
+                    all_wtg.append(df_ft)
+
+        self.all_data = pd.concat(all_wtg,axis=0)
+
+
+    def get_all_data(self,):
+        scene_list = self.Large_components_temp_ls + self.generator_temp_ls
+        for scene in scene_list:
+            self.all_data[f'{scene}温升({scene[2:]}-舱内温度)'.replace('温度温升','温升')] = self.all_data[scene] - self.all_data[self.cabin_temp_pn]
+            self.full_pw = self.all_data[self.all_data[self.full_time_pn]>60].sort_values(by=[self.wtg_pn,self.time_pn]).reset_index(drop=True)
+
     
 
     def torque_speed_warning(self,
@@ -220,6 +253,62 @@ class Kuntouling_mingyang():
         blade_result_df = pd.DataFrame(result_list)
         blade_result_df.columns = ['风机号','风机型号','桨叶角度最小值']
         return blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type
+
+    def set_error_threshold(self,):
+        scene_list = self.Large_components_temp_ls + self.generator_temp_ls
+        warning_thre = [None]*12
+        error_thre = [80,80,95,95,70,70] + [145]*6
+        abnormal_thre = [70,70,85,85,60,60] + [135]*6
+        abnormal_thre2 = [80,90,95,95,70,70] + [140]*6
+        self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
+
+    def gen_Large_components_temp(self,
+                                  if_notation=True):
+        figure_list = []
+        for _,scene_info in self.scene_df.iterrows():
+            scene,abnormal,warning,error,abnormal_k = scene_info
+            # print(scene)
+            title1 = f'满发60分钟后{scene[2:]}'
+            title2 = f'满发60分钟后{scene[2:]}温升'.replace('温度温升','温升')
+            title2 = f'满发60分钟后{scene}温升\n({scene}-舱内温度)'.replace('温度温升','温升')
+            # save_path = 'D:\OneDrive - CUHK-Shenzhen/1 新天\数字运营部 任务\昆头岭手动分析/6、7月/'+ scene+'.png'
+            fig1 = plot_scene(self.full_pw,
+                              scene,
+                              'tab20',
+                              '温度（℃）',
+                              '次数',
+                              style=None,
+                              edgecolor='face',
+                              point_size=20,
+                              point_alpha = 1,
+                              title=title1,
+                              time_pn=self.time_pn,
+                              wtg_pn = self.wtg_pn,
+                              legend_cols=2,
+                              hlines=[abnormal,warning,error,abnormal_k],
+                              notation=if_notation,
+                              save_fig=False)
+
+            fig2 = plot_scene(self.full_pw,
+                              f'{scene}温升({scene[2:]}-舱内温度)'.replace('温度温升','温升'),
+                              'tab20',
+                              '温度（℃）',
+                              '次数',
+                              style=None,
+                              edgecolor='face',
+                              point_size=20,
+                              point_alpha = 1,
+                              title=title2,
+                              time_pn=self.time_pn,
+                              wtg_pn =  self.wtg_pn,
+                              legend_cols=2,
+                              hlines=[None,None,None,abnormal_k],
+                              notation=if_notation,
+                              save_fig=False)
+            figure_list.append(fig1)
+            figure_list.append(fig2)        
+        return figure_list
+
 
 
 
