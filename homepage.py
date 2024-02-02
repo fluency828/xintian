@@ -18,12 +18,14 @@ from matplotlib import rcParams
 # from pathlib import Path
 from site_function import Kuntouling_mingyang
 from utils import save_data,save_figures
+import matplotlib as mpl
 
+mpl.font_manager.fontManager.addfont('字体/SIMSUN.ttf')
 config = {
     "font.family":'serif',
     # "font.size": 20,
     "mathtext.fontset":'stix',
-    "font.serif": ['SimSun'],
+    "font.serif": ['SIMSUN'],
 }
 rcParams.update(config)
 plt.rcParams['axes.unicode_minus'] = False
@@ -33,7 +35,7 @@ plt.rcParams['axes.unicode_minus'] = False
 ########################## 正式开始网页！###################
 st.title('风场数据分析报告')
 st.markdown('# 查看原始数据')
-phase_name = st.selectbox(
+phase_name = st.sidebar.selectbox(
     label='请输入您选择的风场',
     options=('昆头岭明阳','康庄运达','魁通沟金风'),
     help='不同风场可能对应不同的数据格式和测点名称')
@@ -61,8 +63,8 @@ if phase_name=='昆头岭明阳':
 # pw_cur_path = 'pw_theory_cur/'+st.sidebar.selectbox(label='选择理论功率数据文件',
 #                            options=os.listdir('pw_theory_cur/'))
 
-raw_data_path = st.file_uploader('上传原始数据')
-pw_cur_path = st.file_uploader('上传理论功率数据')
+raw_data_path = st.sidebar.file_uploader('上传原始数据')
+pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
 @st.cache_data
 def load_data(url):
