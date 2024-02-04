@@ -215,18 +215,15 @@ def plotly_scene(full_pw_df,point_name,ylabel,xlabel,title,\
 # # py.sign_in('221041004','wbZMxMecylzhXahyRIam')
 # # figure = figure.encode('utf-8')
 
-
 def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None,titlesize=28,labelsize=15,point_size =20 ,edgecolor='white',point_alpha=1,grid=False,\
                     wtg_pn='风机',time_pn='data_time',path=None,title=None,legend_cols=1,legend_loc='lower right',color_map='tab20',sharpness=500,\
-                    divide_thre=1.13,if_hlines=True,notation=True,loc = 'upper right',unit='℃',day_sep=5,save_fig=True):
+                    divide_thre=1.13,diff_thre=-1,if_hlines=True,notation=True,loc = 'upper right',unit='℃',day_sep=5,save_fig=True):
     '''
     一个风机不同测点互相对比, 异常的风机画出散点图，不同测点用不同颜色标识。
     对比方法：
-    对风机的所有时刻查看是否满足条件： 最大值是否大于最小值的`{abnormal_thre}`倍，且最大值比最小值大`{diff_thre}`，得到原始数据中筛选出的异常的时刻
-    对异常数据进行聚合，得到每次出现异常的开始时间、结束时间、最大最小值的平均距离
-    筛选聚合后的每次异常的平均距离大于`{mean_diff_thre}`，得到满足条件的聚合结果。并计算每个测点的平均值（消除时刻维度）
-    如果没有满足条件的聚合结果，且测点平均值中最大值/最小值 小于`{divide_thre}`则该风机无异常
-    反之认为该风机有异常，画出三相温度的对比图。如果vlines为True则用红色区域标出聚合结果的开始时间和结束时间。
+    计算同风机每个测点的平均值（消除时刻维度）
+    如果没有满足条件的聚合结果，且测点平均值中最大值/最小值 小于`{divide_thre}`则该风机无异常。
+    反之认为该风机有异常，画出三相温度的对比图。
 
     Parameters
     ----------
@@ -273,7 +270,7 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
     min_point = temp_mean.idxmin()
     if data_df.shape[0] == 0:
         return
-    elif  divide<divide_thre:
+    elif  (divide<divide_thre)or(diff<diff_thre):
         print(f'congrats! {wtg_id}风机对比无异常')
         return
     else:
@@ -325,7 +322,7 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
         ax.text(x=min_x,y=temp_mean.min(),s=f'{min_point}平均值 = {round(temp_mean.min(),2)}{unit}',color='#CD0000',ha = 'left',va='bottom',size=10,fontweight='bold',bbox = bbox0)    
     if notation:
         # text = f'{max_point}平均比{min_point}高{round(diff,2)}{unit},高出{round((divide-1)*100,2)}%。'
-        text = f'{max_point}平均比{min_point}高{round((divide-1)*100,2)}%。'
+        text = f'{max_point}平均比{min_point}高{round((divide-1)*100,2)}%({round(diff,2)}℃)。'
         # 创建文本框，将文本置于文本框内
         bbox = { "alpha": 0.5,'facecolor':'white','pad':0.5,'edgecolor':'#DCDCDC','boxstyle':'round'}
         # 所有文本使用统一的样式
@@ -343,7 +340,8 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
     # ax.set_title(f'与额定功率差值小于{1000}'+f'{full_time_thre}'+'min后'+point_name)
 
     ax.legend(ncol=legend_cols,loc=legend_loc)
+    # 显示图形
+    # plt.show()
     if save_fig:
-        plt.savefig(path,bbox_inches='tight',dpi=sharpness)
-    plt.close()
+        plt.savefig(path,bbox_inches='tight',dpi=sharpness,facecolor='white')
     return figure

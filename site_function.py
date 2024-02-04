@@ -309,8 +309,62 @@ class Kuntouling_mingyang():
             figure_list.append(fig2)        
         return figure_list
 
+    def gen_generator_Temp(self,
+                           if_h=True,):
+        scene_comparison = self.generator_temp_ls
+        fig_ls = []
+        for _,wtg_info in self.wtg_list.iterrows():
+            wtg_id,_ = wtg_info
+            title =  f'{wtg_id}风机满发后发电机绕组温度预警'
+            fig = plot_comparison_divide(dataframe=self.full_pw,
+                                         wtg_id=wtg_id,
+                                         point_names=scene_comparison,
+                                         ylabel='温度(℃)',
+                                         xlabel='次数',
+                                         wtg_pn = self.wtg_pn,
+                                         time_pn=self.time_pn,
+                                         title= title,
+                                         point_size=15,
+                                         edgecolor='face',
+                                         divide_thre = 1.2,
+                                         diff_thre = 6,
+                                         loc='lower left',
+                                         if_hlines=if_h,
+                                         save_fig=False)
+            if fig is not None:
+                fig_ls.append(fig)
+        return fig_ls
 
 
+    def gen_pitch_motor_Temp(self,
+                           if_h=True,):
+        scene_comparison2 = self.pitch_motor_temp_ls
+        fig_ls = []
+        for i,wtg_info in self.wtg_list.iterrows():
+            wtg_id,_ = wtg_info
+            title =  f'{wtg_id}变桨电机温度预警'
+            fig =  plot_comparison_divide(dataframe = self.all_data,
+                                          wtg_id=wtg_id,
+                                          point_names=scene_comparison2,
+                                          ylabel='温度(℃)',
+                                          xlabel='时间',
+                                          wtg_pn = self.wtg_pn,
+                                          time_pn=self.time_pn,
+                                          title=title,
+                                          point_size=6,
+                                          edgecolor='face',
+                                          color_map='nipy_spectral',
+                                          divide_thre=1.2,
+                                          diff_thre = 6,
+                                          sharpness=500,
+                                          loc='lower left',
+                                          unit='℃',
+                                          if_hlines=if_h,
+                                          notation=True,
+                                          save_fig=False)
+            if fig is not None:
+                fig_ls.append(fig)
+        return fig_ls
 
 ####################### test #####################
 # ROOT_PATH = 'D:/1 新天\数字运营部 任务\昆头岭手动分析/12月/'

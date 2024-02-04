@@ -173,6 +173,28 @@ for i,figs in enumerate(Large_components_fig):
     with col_ls[i%2]:
         st.pyplot(figs)
 
+#################################
+st.markdown('# 满发后发电机绕组温度预警')
+# st.write(site_instance.full_pw)
+
+generator_temp_fig = site_instance.gen_generator_Temp()
+st.markdown(f'有 {len(generator_temp_fig)} 台风机发电机绕组温度对比异常')
+col_ls = st.columns(4)
+for i,figs in enumerate(generator_temp_fig):
+    with col_ls[i%4]:
+        st.pyplot(figs)
+
+#################################
+st.markdown('# 变桨电机温度预警')
+# st.write(site_instance.full_pw)
+
+pitch_motor_temp_fig = site_instance.gen_pitch_motor_Temp()
+st.markdown(f'有 {len(pitch_motor_temp_fig)} 台风机变桨电机温度对比异常')
+col_ls = st.columns(4)
+for i,figs in enumerate(pitch_motor_temp_fig):
+    with col_ls[i%4]:
+        st.pyplot(figs)
+
 
 
 # save = st.button('save_all_results')
