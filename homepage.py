@@ -12,6 +12,7 @@ from matplotlib import rcParams
 from site_function import Kuntouling_mingyang
 from utils import save_data,save_figures
 import matplotlib as mpl
+import io
 
 mpl.font_manager.fontManager.addfont('字体/SIMSUN.ttf')
 config = {
@@ -50,6 +51,7 @@ if phase_name=='昆头岭明阳':
     wind_north_angle = '平均风向对北角度'
     generator_speed_pn = '平均发电机转速1'
 
+
 # ROOT_PATH = st.sidebar.text_input('文件路径')
 # raw_data_path = ROOT_PATH + st.sidebar.selectbox(label='选择原始数据文件',
 #                            options=os.listdir(ROOT_PATH))
@@ -59,17 +61,22 @@ if phase_name=='昆头岭明阳':
 raw_data_path = st.sidebar.file_uploader('上传原始数据')
 pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
-@st.cache_data
+# @st.cache_data
 def load_data(url):
     df = pd.read_csv(url)
     return df
+if raw_data_path is not None:
+    raw_data = load_data(raw_data_path)
+else:
+    raw_data = load_data('D:/1 新天\数字运营部 任务\昆头岭手动分析/24年1月/raw_data.csv')
+theory_pw_cur = pd.read_excel(pw_cur_path if pw_cur_path else 'pw_theory_cur\昆头岭明阳理论功率曲线.xlsx')
 
-raw_data = load_data(raw_data_path)
-theory_pw_cur = pd.read_excel(pw_cur_path)
 
 ####
 site_instance = site_model(raw_data,theory_pw_cur)
 ####
+
+del raw_data,theory_pw_cur
 
 st.write('原始数据')
 st.write(site_instance.raw_data)
@@ -98,7 +105,10 @@ torque_results_df,torque_fig_ls = site_instance.torque_speed_warning()
 
 
 st.markdown(f'去除转速大于2000后数据大小为{site_instance.torque_speed_data.shape}')
-st.write(site_instance.torque_speed_data[[type_pn,site_instance.generator_torque_pn,generator_speed_pn,site_instance.generator_speed_square,]].groupby(type_pn).describe().T)
+st.write(site_instance.torque_speed_data[[type_pn,
+                                          site_instance.generator_torque_pn,
+                                          generator_speed_pn,
+                                          site_instance.generator_speed_square,]].groupby(type_pn).describe().T)
 
 col_ls = st.columns(4)
 for i,figs in enumerate(torque_fig_ls):
@@ -194,6 +204,33 @@ col_ls = st.columns(4)
 for i,figs in enumerate(pitch_motor_temp_fig):
     with col_ls[i%4]:
         st.pyplot(figs)
+
+from xintian.gen_docx import gen_document
+
+
+st.markdown('# 最后生成word文档')
+Doc = gen_document(site_instance,
+             Large_components_fig,
+             generator_temp_fig,
+             pitch_motor_temp_fig,
+             torque_fig_ls,
+             yaw_result_df,
+             fig_ls_blade,
+             fig_ls_blade_time
+             )
+word = Doc.document
+st.markdown('文档生成成功了！')
+
+bio = io.BytesIO()
+word.save(bio)
+if word:
+    st.download_button(
+        label = '点击下载word文件',
+        data = bio.getvalue(),
+        file_name = f'{phase_name}.docx',
+        mime = 'docx'
+    )
+
 
 
 

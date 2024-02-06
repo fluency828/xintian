@@ -59,7 +59,19 @@ class Kuntouling_mingyang():
         self.pitch_motor_temp_ls = pitch_motor_temp
 
         ## 整理原始数据
-        self.raw_data = raw_data
+        self.raw_data = raw_data[[self.wtg_pn,
+                                  self.time_pn,
+                                  self.type_pn,
+                                  self.P_pn,
+                                  self.w_pn,
+                                  self.angle_pn,
+                                  self.cabin_north_angle,
+                                  self.wind_north_angle,
+                                  self.generator_speed_pn,
+                                  self.cabin_temp_pn,
+                                    ]+self.Large_components_temp_ls+
+                                    self.generator_temp_ls+
+                                    self.pitch_motor_temp_ls]
         if 'Unnamed: 235' in  self.raw_data.columns:
             self.raw_data = self.raw_data.drop('Unnamed: 235',axis=1)
         self.raw_data[self.time_pn] = pd.to_datetime(self.raw_data[self.time_pn])
@@ -98,7 +110,7 @@ class Kuntouling_mingyang():
                   pw_diff_threshold=[500,500],
                   type_ls = ['MySE4.0MW','MySE5.0MW'],
                   rated_pw_ls = [4000,5000,]):
-        all_wtg = [] 
+        all_wtg = []
         for _,wtg_info in self.wtg_list.iterrows():
             # print(wtg_info)
             wtg,type = wtg_info

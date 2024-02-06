@@ -271,11 +271,11 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
     if data_df.shape[0] == 0:
         return
     elif  (divide<divide_thre)or(diff<diff_thre):
-        print(f'congrats! {wtg_id}风机对比无异常')
+        # print(f'congrats! {wtg_id}风机对比无异常')
         return
-    else:
-        print(f'{wtg_id}风机对比异常')
-        print(f'{wtg_id}风机{max_point}/{min_point}={divide},{max_point}-{min_point} = {diff}')
+    # else:
+    #     print(f'{wtg_id}风机对比异常')
+    #     print(f'{wtg_id}风机{max_point}/{min_point}={divide},{max_point}-{min_point} = {diff}')
     if style is not None:
         plt.style.use(style)
         config = {
@@ -344,4 +344,5 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
     # plt.show()
     if save_fig:
         plt.savefig(path,bbox_inches='tight',dpi=sharpness,facecolor='white')
+    plt.close()
     return figure
