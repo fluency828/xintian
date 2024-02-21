@@ -111,8 +111,10 @@ def load_data(url):
     return df
 if raw_data_path is not None:
     raw_data = load_data(raw_data_path)
+else:
+    raw_data = load_data('eg_data/raw_data.csv')
 
-theory_pw_cur = pd.read_excel(pw_cur_path)
+theory_pw_cur = pd.read_excel(pw_cur_path if pw_cur_path else 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx')
 
 # print(site_model.print_attribute)
 pn_dictionary['raw_data'] = raw_data
