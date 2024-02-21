@@ -30,10 +30,10 @@ def yaw_result_generate(wtg_ls,data_df,yaw_angle_bin_pn='机舱与风向夹角_b
         K_max= result.iloc[result_valid['K'].idxmax(),:]['K'] # 最高K值
         K_most= result.iloc[result_valid['prob'].idxmax(),:]['K'] # 频率最高夹角对应K值
         K_dif = K_max-K_0 # 最高K值-0°K值
-        topk.append([wtg_id,wtg_type,wtg_data.shape[0],target2,target3,abs(target2-target3),K_0,K_max,K_most,K_dif])
+        topk.append([wtg_id,wtg_type,wtg_data.shape[0],target2,target3,abs(target2-target3),round(K_0,4),round(K_max,4),round(K_most,4),round(K_dif,4)])
 
 
 
     warning = pd.DataFrame(topk)
-    warning.columns = ['风机号','风机型号','计数','K值最大夹角','频率最高夹角','差值','0°K值','最高K值','频率最高K值','最高-0']
+    warning.columns = ['风机号','风机型号','计数','K值最大夹角','频率最高夹角','差值','0°K值','最高K值','频率最高K值','最高K值-0°K值']
     return warning,result_wtg_list 

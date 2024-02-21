@@ -158,7 +158,7 @@ def limit_power_delete_loc(data,pw_cur,angle_thr,wind_pn = '风速',P_pn='发电
     return result_df
 
 
-@st.cache_resource(ttl=10800)
+# @st.cache_resource(ttl=10800)
 def limit_power_detect_loc(data,pw_cur,angle_thr=3,wind_pn = '风速',P_pn='发电机有功功率',blade_angle_pn = '桨叶片角度1',type_pn='风机类型',\
                         pw_thr=100,gap_thr=0.1,multiple_type=False,time_pn='data_time',wtg_pn='device_name'):
     """
@@ -333,4 +333,4 @@ def limit_power_detect_loc_Goldwind(data,pw_cur,angle_thr=3,wind_pn = '风速',P
     # print(np.unique(unlimited_data[P_pn]))
     result_df= unlimited_data[unlimited_data[P_pn]>0].reset_index(drop=True) #最终的剔除了限功率点且功率大于0的所有数据
     print(f'正常发电点:{result_df.shape}')
-    return result_df,all_data_df
+    return result_df,all_data_df,unlimited_data.shape[0]
