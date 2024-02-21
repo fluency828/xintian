@@ -13,6 +13,8 @@ from site_function import Kuntouling_mingyang,kuitonggou_jinfeng
 from utils import save_data,save_figures
 import matplotlib as mpl
 import io
+# import math
+# print(math.version)
 
 mpl.font_manager.fontManager.addfont('字体/SIMSUN.ttf')
 config = {
@@ -255,7 +257,7 @@ for i,figs in enumerate(pitch_motor_temp_fig):
 
 from xintian.gen_docx import gen_document
 
-del yaw_result_list
+del yaw_result_list,site_instance.raw_data,site_instance.gen_data,site_instance.all_data
 st.markdown('# 最后生成word文档')
 Doc = gen_document(site_instance,
              Large_components_fig,
