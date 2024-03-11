@@ -33,32 +33,56 @@ st.title('风场数据分析报告')
 st.markdown('# 查看原始数据')
 phase_name = st.sidebar.selectbox(
     label='请输入您选择的风场',
-    options=('昆头岭明阳','康庄运达','魁通沟金风四期','魁通沟金风五六期'),
+    options=('昆头岭明阳',
+             '康庄运达',
+             '魁通沟金风四期',
+             '魁通沟金风五六期'),
     help='不同风场可能对应不同的数据格式和测点名称')
 
 ####
-site_dictionary = {'昆头岭明阳':Kuntouling_mingyang,'魁通沟金风四期':kuitonggou_jinfeng,'魁通沟金风五六期':kuitonggou_jinfeng,}
+site_dictionary = {'昆头岭明阳':Kuntouling_mingyang,
+                   '魁通沟金风四期':kuitonggou_jinfeng,
+                   '魁通沟金风五六期':kuitonggou_jinfeng,
+                #    '康庄运达':kangzhaung_yunda,
+                   }
 site_model = site_dictionary[phase_name]
 ####
 
 if phase_name=='昆头岭明阳':
+    # pn_dictionary = {
+    #     'phase_name':phase_name,
+    #     'wtg_pn':'风机',
+    #     'time_pn':'时间',
+    #     'type_pn':'风机类型',
+    #     'P_pn':'平均电网有功功率',
+    #     'w_pn':'平均风速',
+    #     'angle_pn':'平均桨叶角度1a',
+    #     'cabin_north_angle':'平均机舱对北角度',
+    #     'wind_north_angle':'平均风向对北角度',
+    #     'generator_speed_pn':'平均发电机转速1',
+    #     'cabin_temp_pn':'平均机舱温度',
+    #     'Large_components_temp' : ['平均齿轮箱前轴承温度','平均齿轮箱后轴承温度','平均发电机前轴承温度','平均发电机后轴承温度',
+    #                 '平均齿轮箱主轴承温度','平均齿轮箱油温',],
+    #     'generator_temp' : ['平均发电机绕组温度1','平均发电机绕组温度2','平均发电机绕组温度3','平均发电机绕组温度4','平均发电机绕组温度5','平均发电机绕组温度6'],
+    #     'pitch_motor_temp' : ['平均桨叶电机1温度','平均桨叶电机2温度','平均桨叶电机3温度']
+    # }
     pn_dictionary = {
         'phase_name':phase_name,
-        'wtg_pn':'风机',
-        'time_pn':'时间',
+        'wtg_pn':'device_name',
+        'time_pn':'data_time',
         'type_pn':'风机类型',
-        'P_pn':'平均电网有功功率',
-        'w_pn':'平均风速',
-        'angle_pn':'平均桨叶角度1a',
-        'cabin_north_angle':'平均机舱对北角度',
-        'wind_north_angle':'平均风向对北角度',
-        'generator_speed_pn':'平均发电机转速1',
-        'cabin_temp_pn':'平均机舱温度',
-        'Large_components_temp' : ['平均齿轮箱前轴承温度','平均齿轮箱后轴承温度','平均发电机前轴承温度','平均发电机后轴承温度',
-                    '平均齿轮箱主轴承温度','平均齿轮箱油温',],
-        'generator_temp' : ['平均发电机绕组温度1','平均发电机绕组温度2','平均发电机绕组温度3','平均发电机绕组温度4','平均发电机绕组温度5','平均发电机绕组温度6'],
-        'pitch_motor_temp' : ['平均桨叶电机1温度','平均桨叶电机2温度','平均桨叶电机3温度']
-    }
+        'P_pn':'发电机有功功率',
+        'w_pn':'风速',
+        'angle_pn':'桨叶角度1B',
+        'cabin_north_angle':'机舱对北角度',
+        'wind_north_angle':'风向对北角度',
+        'generator_speed_pn':'发电机转速',
+        'cabin_temp_pn':'舱内温度',
+        'Large_components_temp' : ['齿轮箱前轴承温度','齿轮箱后轴承温度','发电机驱动端轴承温度','发电机非驱动端轴承温度',
+                     '齿轮箱主轴承温度', '齿轮箱油池温度',],
+        'generator_temp' : ['发电机绕组温度1', '发电机绕组温度2', '发电机绕组温度3', '发电机绕组温度4', '发电机绕组温度5', '发电机绕组温度6'],
+        'pitch_motor_temp' : ['1号桨电机温度', '2号桨电机温度', '3号桨电机温度']
+    }  
 elif phase_name=='魁通沟金风四期':
     pn_dictionary = {
         'phase_name':phase_name,
@@ -103,7 +127,7 @@ elif phase_name == '魁通沟金风五六期':
 #                            options=os.listdir('pw_theory_cur/'))
 
 raw_data_path = st.sidebar.file_uploader('上传原始数据')
-pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
+# pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
 # @st.cache_data
 def load_data(url):
@@ -113,6 +137,15 @@ if raw_data_path is not None:
     raw_data = load_data(raw_data_path)
 else:
     raw_data = load_data('eg_data/raw_data.csv')
+
+if phase_name=='昆头岭明阳':
+    pw_cur_path = 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx'
+elif phase_name=='康庄运达':
+    pw_cur_path = 'pw_theory_cur/康庄运达理论功率曲线.xlsx'
+elif (phase_name=='魁通沟金风四期') or (phase_name == '魁通沟金风五六期'):
+    pw_cur_path = 'pw_theory_cur/魁通沟金风理论功率曲线.xlsx'
+else:
+    pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
 theory_pw_cur = pd.read_excel(pw_cur_path if pw_cur_path else 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx')
 
@@ -216,6 +249,7 @@ site_instance.set_error_threshold()
 ################################
 st.markdown('# 满发后大部件温度预警')
 st.markdown('all data')
+st.write(site_instance.all_data)
 st.write(site_instance.all_data.describe())
 
 

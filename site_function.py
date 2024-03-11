@@ -134,7 +134,7 @@ class Kuntouling_mingyang():
     def get_all_data(self,):
         scene_list = self.Large_components_temp_ls + self.generator_temp_ls
         for scene in scene_list:
-            self.all_data[f'{scene}温升({scene[2:]}-舱内温度)'.replace('温度温升','温升')] = self.all_data[scene] - self.all_data[self.cabin_temp_pn]
+            self.all_data[f'{scene}温升({scene}-舱内温度)'.replace('温度温升','温升')] = self.all_data[scene] - self.all_data[self.cabin_temp_pn]
             self.full_pw = self.all_data[self.all_data[self.full_time_pn]>60].sort_values(by=[self.wtg_pn,self.time_pn]).reset_index(drop=True)
 
     
@@ -273,8 +273,8 @@ class Kuntouling_mingyang():
         scene_list = self.Large_components_temp_ls + self.generator_temp_ls
         warning_thre = [None]*12
         error_thre = [80,80,95,95,70,70] + [145]*6
-        abnormal_thre = [70,70,85,85,60,60] + [135]*6
-        abnormal_thre2 = [80,90,95,95,70,70] + [140]*6
+        abnormal_thre = [70,70,85,85,60,65] + [135]*6
+        abnormal_thre2 = [65,65,95,95,70,70] + [140]*6
         self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,
@@ -283,8 +283,8 @@ class Kuntouling_mingyang():
         for _,scene_info in self.scene_df.iterrows():
             scene,abnormal,warning,error,abnormal_k = scene_info
             # print(scene)
-            title1 = f'满发60分钟后{scene[2:]}'
-            title2 = f'满发60分钟后{scene[2:]}温升'.replace('温度温升','温升')
+            title1 = f'满发60分钟后{scene}'
+            title2 = f'满发60分钟后{scene}温升'.replace('温度温升','温升')
             title2 = f'满发60分钟后{scene}温升\n({scene}-舱内温度)'.replace('温度温升','温升')
             # save_path = 'D:\OneDrive - CUHK-Shenzhen/1 新天\数字运营部 任务\昆头岭手动分析/6、7月/'+ scene+'.png'
             fig1 = plot_scene(self.full_pw,
@@ -305,7 +305,7 @@ class Kuntouling_mingyang():
                               save_fig=False)
 
             fig2 = plot_scene(self.full_pw,
-                              f'{scene}温升({scene[2:]}-舱内温度)'.replace('温度温升','温升'),
+                              f'{scene}温升({scene}-舱内温度)'.replace('温度温升','温升'),
                               'tab20',
                               '温度（℃）',
                               '次数',
@@ -760,7 +760,6 @@ class kuitonggou_jinfeng():
             if fig is not None:
                 fig_ls.append(fig)
         return fig_ls
-
 
 
 

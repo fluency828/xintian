@@ -77,7 +77,7 @@ class gen_document():
             if i<len(figure_list):
                 run = cell.add_paragraph().add_run()
                 buf = io.BytesIO()
-                figure_list[i].savefig(buf,dpi=300,facecolor='white',format='jpg')
+                figure_list[i].savefig(buf,dpi=300,facecolor='white',format='jpg',bbox_inches='tight')
                 run.add_picture(buf,height=Cm(3.2))
                 buf.close()
             else:
@@ -92,7 +92,7 @@ class gen_document():
                 run = cell.add_paragraph().add_run()
                 # run.add_picture(self.Large_component_fig_ls[i*2+j],height=Cm(5.5))
                 buf = io.BytesIO()
-                self.Large_component_fig_ls[i*2+j].savefig(buf,dpi=300,facecolor='white',format='jpg')
+                self.Large_component_fig_ls[i*2+j].savefig(buf,dpi=300,facecolor='white',format='jpg',bbox_inches='tight')
                 run.add_picture(buf,height=Cm(5.5))
                 buf.close()
     
