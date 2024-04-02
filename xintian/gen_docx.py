@@ -12,6 +12,7 @@ class gen_document():
                 #  generator_temp_ls,
                 #  pitch_motor_temp_ls,
                  Large_component_fig_ls,
+                 Large_components_fig_single_ls,
                  generator_temp_fig_ls,
                  pitch_motor_temp_fig_ls,
                  torque_fig_ls,
@@ -24,6 +25,7 @@ class gen_document():
         self.generator_temp_ls = instance.generator_temp_ls
         self.pitch_motor_temp_ls = instance.pitch_motor_temp_ls
         self.Large_component_fig_ls = Large_component_fig_ls
+        self.Large_components_fig_single_ls = Large_components_fig_single_ls
         self.generator_temp_fig_ls = generator_temp_fig_ls
         self.pitch_motor_temp_fig_ls = pitch_motor_temp_fig_ls
         self.torque_fig_ls = torque_fig_ls
@@ -42,13 +44,19 @@ class gen_document():
         if len(self.Large_component_fig_ls)>0:
             self.gen_Large_component_paragraph()
         # print(1)
-        self.document.add_heading('发电机绕组温度异常的风机',level=2)
+        self.document.add_heading('大部件温度温度预警(非满发)',level=3)
+        if len(self.Large_components_fig_single_ls)>0:
+            self.gen_all_wtg_paragraph(self.Large_components_fig_single_ls)
+        else: 
+            self.document.add_paragraph('大部件温度温度预警(非满发)无异常')
+        
+        self.document.add_heading('发电机绕组温度异常的风机',level=3)
         if len(self.generator_temp_fig_ls)>0:
             self.gen_all_wtg_paragraph(self.generator_temp_fig_ls)
         else: 
             self.document.add_paragraph('发电机绕组温度同风机不同相对比无异常')
         # print(1)
-        self.document.add_heading('变桨电机温度异常的风机',level=2)
+        self.document.add_heading('变桨电机温度异常的风机',level=3)
         if len(self.pitch_motor_temp_fig_ls)>0:
             self.gen_all_wtg_paragraph(self.pitch_motor_temp_fig_ls)
         else: 
@@ -95,6 +103,7 @@ class gen_document():
                 self.Large_component_fig_ls[i*2+j].savefig(buf,dpi=300,facecolor='white',format='jpg',bbox_inches='tight')
                 run.add_picture(buf,height=Cm(5.5))
                 buf.close()
+
     
     def gen_table_paragraph(self,dataframe):
         table = self.document.add_table(rows=1,cols=dataframe.shape[1])

@@ -101,7 +101,7 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
     else:
         abnormal = hlines[0]
     if notation: #是否自动标注图片情况
-        print(f'自动标注,数据最大值为：{y_max}，异常阈值：{abnormal}')
+        print(f'自动标注,数据最大值为：{round(y_max,2)}，异常阈值：{abnormal}')
         if (abnormal is not None) & (y_max>abnormal):
             print('有异常数据')
             abnormal_data = raw_data[raw_data[point_name]>abnormal].reset_index(drop=True)
@@ -346,3 +346,143 @@ def plot_comparison_divide(dataframe,wtg_id,point_names,ylabel,xlabel,style=None
         plt.savefig(path,bbox_inches='tight',dpi=sharpness,facecolor='white')
     plt.close()
     return figure
+
+def plot_single_scene(wtg_df,
+                      point_name,
+                      ylabel,
+                      xlabel,
+                      style='default',
+                      titlesize=28,
+                      labelsize=15,
+                      edgecolor='white',
+                      point_size=50,
+                      point_alpha=1,
+                      grid=False,
+                      wtg_pn='风机',
+                      wtg_id = '#01',
+                      time_pn='data_time',
+                      path=None,
+                      title=None,
+                      sharpness=200,
+                      hlines=[None,None,None,None],
+                      annotation_name=['异常值','告警值','故障值','温升异常值'],
+                      notation=True,
+                      save_fig=True,
+                      day_sep=5):
+    '''
+    画出传入风机数据的指定测点的散点图，不同风机用不同颜色标识。
+    Parameters
+    ----------
+    - wtg_df: 原始数据，规定为筛选某台风机后的数据
+    - point_name: 需要画图的测点名称如 齿轮箱后轴承温度
+    - ylabel: y轴标签名
+    - xlabel: x轴标签名
+    - style: 图片风格，如 default,seaborn,ggplot
+    - titlesize: 标题大小
+    - labelsize: x，y轴标签大小
+    - edgecolor: 散点边缘颜色
+    - point_size: 散点大小 如50
+    - all_color: 如果非空则所有风机都用该颜色画图
+    - point_alph：散点透明度 0-1
+    - grid: 是否要网格
+    - time_pn:时间 point name, `str`
+    - wtg_pn: 风机号 point name,`str`
+    - path: 保存图片的路径
+    - title: 图片标题
+    - sharpness： 图片清晰度
+    - hlines
+
+    return:
+    ----------
+    返回图片中所用数据 pd.DataFrame
+    返回图片对象：matplotlib fig
+    '''
+    raw_data = wtg_df[[wtg_pn,time_pn]+[point_name]]
+    y = raw_data[point_name]
+    x = raw_data[time_pn]
+    y_max = wtg_df[point_name].max()
+    y_min = wtg_df[point_name].min()
+    x_max = max(wtg_df[time_pn])
+    x_min = min(wtg_df[time_pn])
+    y_axis_min = min(y_min-5,0)
+    abnormal = hlines[0]
+    if (abnormal is None) | (y_max<abnormal):
+        print(f'{point_name}测点无异常数据')
+        return None
+    else:
+        print(f'自动标注,数据最大值为：{round(y_max,2)}，异常阈值：{abnormal}')
+    wtg_list = np.unique(wtg_df[wtg_pn])
+    if wtg_list != [wtg_id]:
+        raise Exception(f'传入了多个风机号{wtg_list}')
+    #### 画图
+    if style is not None:
+        plt.style.use(style)
+    if grid:
+        plt.grid(True,which='both',ls='dashed')
+
+    fig, ax = plt.subplots(figsize=(15,8))
+    ax.scatter(x, y,edgecolors=edgecolor,s=point_size,alpha=point_alpha)
+        # ax.plot(x, y, label=column_name)
+    # 设置图形y轴的最大值（如果存在故障值，则最大值为故障值）
+    if hlines[-2] is not None:
+        max_y = max(y_max,hlines[-2])
+    else:
+        max_y = y_max
+    ax.set_ylim(y_axis_min,(max_y+5)) #最大、最小值前后延长5
+    y_sep = (y_max-y_axis_min+5)//20
+    y_major_locator = MultipleLocator(y_sep) #设置坐标轴间隔
+    x_major_locator = mdate.DayLocator(interval=day_sep)
+    ax.yaxis.set_major_locator(y_major_locator)
+    ax.xaxis.set_major_locator(x_major_locator)
+    # 画出告警值和故障值横线（如果有）
+    for i,thre in enumerate(hlines[:-1]):
+        if thre is not None:
+            ax.hlines(y=thre,xmax=x_max,xmin=x_min,color='#B22222',linestyles='dotted',alpha=0.8)
+            ax.text(x=x_min,y=thre,s=f'{annotation_name[i]}={thre}℃',color='#B22222',ha = 'left',va='bottom')
+    abnormal_data = wtg_df[wtg_df[point_name]>abnormal].reset_index()
+    abnormal_data['row_num'] = np.arange(abnormal_data.shape[0])
+    abnormal_data['index_dif'] = abnormal_data['index']-abnormal_data['row_num']
+    ax.scatter(abnormal_data[time_pn],abnormal_data[point_name],color='red',edgecolors=edgecolor,s=point_size,alpha=point_alpha)
+    groupby = abnormal_data.groupby('index_dif')
+    alarm_result = groupby.count()[['index']]
+    alarm_result[wtg_pn] = wtg_id
+    alarm_result['start_time'] = groupby.min()[time_pn]
+    alarm_result['end_time'] = groupby.max()[time_pn]
+    alarm_result['max_value'] = groupby.max()[point_name]
+    alarm_result = alarm_result.reset_index(drop=True)
+    text_list = []
+    for i,info in alarm_result.iterrows():
+        # if i%2==0:
+        max_n = round(info['max_value'],2)
+        stime = info['start_time']
+        last_time = info['index']
+        text_list.append(f'\n第{i+1}次异常最高达到{max_n}℃,发生于{stime}，持续了{last_time*10}分钟')
+        # else:
+        #     max_n = round(info['max_value'],2)
+        #     stime = info['start_time']
+        #     last_time = info['index']
+        #     text_list.append(f'第{i+1}次异常最高达到{max_n}℃,发生于{stime}，持续了{last_time*10}分钟')
+        if notation:
+            ax.vlines(x=stime,ymax=(max_y+5),ymin=y_axis_min,color='#B22222',linestyles='dotted',alpha=0.8)
+        text_verbose = ','.join(text_list)
+    text = f'{wtg_id}风机{point_name}超过{abnormal}℃，最高达到{y_max}℃。'
+    if notation: #是否自动标注图片情况
+        text = text +  text_verbose
+    # 创建文本框，将文本置于文本框内
+    bbox = { "alpha": 0.5,'facecolor':'white','pad':0.5,'edgecolor':'#DCDCDC','boxstyle':'round'}
+    # 所有文本使用统一的样式
+    # style = {"size": 15, "color": "#CD2626", "bbox": bbox,'fontweight':'bold'}
+    style = {"size": 15, "color": '#B22222', "bbox": bbox,'fontweight':'bold'}
+    ax.text(x=x_min,y=y_axis_min+y_sep,s=text,ha = 'left',va='bottom',**style)
+    # 设置横轴和纵轴标签
+    ax.set_xlabel(xlabel,fontdict = {'fontsize':labelsize,'fontweight':'bold'})
+    ax.set_ylabel(ylabel,fontdict = {'fontsize':labelsize,'fontweight':'bold'})
+    if title:
+        ax.set_title(title,fontdict={'fontsize':titlesize,'fontweight':'bold'})
+
+    if save_fig:
+        plt.savefig(path,bbox_inches='tight',facecolor='white',dpi=sharpness)
+    plt.close()
+    # plot_data = pd.DataFrame(all_y).T
+    return fig
+

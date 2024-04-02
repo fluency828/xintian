@@ -9,10 +9,12 @@ from matplotlib import rcParams
 # import io
 # import zipfile
 # from pathlib import Path
-from site_function import Kuntouling_mingyang,kuitonggou_jinfeng
+from site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda
 from utils import save_data,save_figures
 import matplotlib as mpl
 import io
+import openpyxl
+from xintian.gen_docx import gen_document
 # import math
 # print(math.version)
 
@@ -43,7 +45,7 @@ phase_name = st.sidebar.selectbox(
 site_dictionary = {'昆头岭明阳':Kuntouling_mingyang,
                    '魁通沟金风四期':kuitonggou_jinfeng,
                    '魁通沟金风五六期':kuitonggou_jinfeng,
-                #    '康庄运达':kangzhaung_yunda,
+                   '康庄运达':kangzhuang_yunda,
                    }
 site_model = site_dictionary[phase_name]
 ####
@@ -119,6 +121,23 @@ elif phase_name == '魁通沟金风五六期':
         'generator_temp' : ['发电机绕组温度最大值',],
         'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']
     }
+elif phase_name == '康庄运达':
+    pn_dictionary = {
+        'phase_name':phase_name,
+        'wtg_pn':'device_name',
+        'time_pn':'data_time',
+        'type_pn':'风机类型',
+        'P_pn':'发电机有功功率',
+        'generator_speed_pn':'发电机转速',
+        'generator_torque_pn':'变流器转矩反馈',
+        'w_pn':'风速',
+        'angle_pn':'桨叶片角度1',
+        'inter_angle_pn':'对风误差',
+        'cabin_temp_pn':'舱内温度',
+        'Large_components_temp' : ['主轴承温度','齿轮箱油池温度','齿轮箱高速轴驱动端轴承温度','齿轮箱高速轴非驱动端轴承温度','发电机驱动端轴承温度', '发电机非驱动端轴承温度', ],
+        'generator_temp' : ['发电机定子U相线圈温度', '发电机定子V相线圈温度','发电机定子W相线圈温度'],
+        'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']        
+    }
 
 # ROOT_PATH = st.sidebar.text_input('文件路径')
 # raw_data_path = ROOT_PATH + st.sidebar.selectbox(label='选择原始数据文件',
@@ -163,7 +182,8 @@ st.write(site_instance.raw_data)
 st.markdown('原始数据概况：')
 st.write(site_instance.raw_data.describe())
 st.markdown(f'原始数据大小为{site_instance.raw_data.shape}')
-
+st.markdown('wtg list')
+st.write(site_instance.wtg_list)
 
 st.markdown('# 处理限功率点')
 
@@ -176,6 +196,22 @@ fig_limit_power,size_changing = site_instance.limit_power()
 
 st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{size_changing}')
 st.pyplot(fig_limit_power)
+
+st.markdown('剔除限电后的数据')
+st.write(site_instance.raw_data_1)
+
+def to_excel(df):
+    output = io.BytesIO()
+    df.to_csv(output, index=False)
+    processed_data = output.getvalue()
+    output.close()
+    return processed_data
+df_csv = to_excel(site_instance.raw_data_1)
+st.download_button(label='📥 Download Current Result',
+                                data=df_csv,
+                                file_name= 'raw_data_1.csv')
+
+
 
 st.markdown('# 转矩控制')
 
@@ -250,6 +286,19 @@ site_instance.set_error_threshold()
 st.markdown('# 满发后大部件温度预警')
 st.markdown('all data')
 st.write(site_instance.all_data)
+
+def to_excel(df):
+    output = io.BytesIO()
+    df.to_csv(output, index=False)
+    processed_data = output.getvalue()
+    output.close()
+    return processed_data
+df_csv = to_excel(site_instance.all_data)
+st.download_button(label='📥 Download Current Result',
+                                data=df_csv,
+                                file_name= 'all_data.csv')
+
+
 st.write(site_instance.all_data.describe())
 
 
@@ -268,6 +317,20 @@ col_ls = st.columns(2)
 for i,figs in enumerate(Large_components_fig):
     with col_ls[i%2]:
         st.pyplot(figs)
+
+##################################
+
+st.markdown('# 大部件文件预警（非满发）')
+# st.write(site_instance.full_pw)
+if_verbose = st.selectbox('是否标明详细情况',options=[False,True,])
+Large_components_fig_single = site_instance.gen_Large_components_temp_single(if_notation=if_verbose)
+st.markdown(f'有 {len(Large_components_fig_single )} 台风机发电机绕组温度对比异常')
+col_ls = st.columns(4)
+for i,figs in enumerate(Large_components_fig_single ):
+    with col_ls[i%4]:
+        st.pyplot(figs)
+
+
 
 #################################
 st.markdown('# 满发后发电机绕组温度预警')
@@ -291,12 +354,13 @@ for i,figs in enumerate(pitch_motor_temp_fig):
     with col_ls[i%4]:
         st.pyplot(figs)
 
-from xintian.gen_docx import gen_document
 
-del yaw_result_list,site_instance.raw_data,site_instance.gen_data,site_instance.all_data
+
+del yaw_result_list,site_instance.raw_data,site_instance.gen_data,site_instance.all_data,df_csv
 st.markdown('# 最后生成word文档')
 Doc = gen_document(site_instance,
              Large_components_fig,
+             Large_components_fig_single,
              generator_temp_fig,
              pitch_motor_temp_fig,
              torque_fig_ls,
@@ -304,7 +368,7 @@ Doc = gen_document(site_instance,
              fig_ls_blade,
              fig_ls_blade_time
              )
-del site_instance,Large_components_fig,generator_temp_fig,pitch_motor_temp_fig,torque_fig_ls,yaw_result_df,fig_ls_blade,fig_ls_blade_time
+del site_instance,Large_components_fig,Large_components_fig_single,generator_temp_fig,pitch_motor_temp_fig,torque_fig_ls,yaw_result_df,fig_ls_blade,fig_ls_blade_time
 word = Doc.document
 st.markdown('文档生成成功了！')
 
