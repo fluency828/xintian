@@ -5,22 +5,22 @@ import pandas as pd
 
 import sys
 # sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
-# from xintian.full_power_time import gen_full_time
-# from xintian.Temp_warning import plot_scene,plotly_scene,plot_comparison_divide
+# from functions.full_power_time import gen_full_time
+# from functions.Temp_warning import plot_scene,plotly_scene,plot_comparison_divide
 # import plotly.express as px
 import os
 import matplotlib.dates as mdate
 import sys
 # sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
-from xintian.power_limited import limit_power_detect_loc,limit_power_detect_loc_Goldwind
-from xintian.plotly_functions import plot_limit_power,plot_yaw_angle,plot_blade_power_all
+from functions.power_limited import limit_power_detect_loc,limit_power_detect_loc_Goldwind
+from functions.plotly_functions import plot_limit_power,plot_yaw_angle,plot_blade_power_all
 from matplotlib import rcParams
-from xintian.Speed_Torque import rated_speed_torque
-# from xintian.useful_tools import figs2zip
-from xintian.yaw import yaw_result_generate
-from xintian.angle_wind import plot_angle_power
-from xintian.Temp_warning import plot_scene,plot_comparison_divide,plot_single_scene
-from xintian.full_power_time import gen_full_time
+from functions.Speed_Torque import rated_speed_torque
+# from functions.useful_tools import figs2zip
+from functions.yaw import yaw_result_generate
+from functions.angle_wind import plot_angle_power
+from functions.Temp_warning import plot_scene,plot_comparison_divide,plot_single_scene
+from functions.full_power_time import gen_full_time
 
 class Kuntouling_mingyang():
     def __init__(self,raw_data,theory_pw_cur,

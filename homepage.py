@@ -14,7 +14,7 @@ from utils import save_data,save_figures
 import matplotlib as mpl
 import io
 import openpyxl
-from xintian.gen_docx import gen_document
+from functions.gen_docx import gen_document
 # import math
 # print(math.version)
 
