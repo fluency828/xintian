@@ -5,7 +5,7 @@ import seaborn as sns
 from matplotlib.pyplot import MultipleLocator
 import statsmodels.api as sm
 import os
-plt.rc('font',family = 'YouYuan')
+# plt.rc('font',family = 'YouYuan')
 import sys
 sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
 from xintian.power_limited import limit_power_delete
@@ -104,7 +104,7 @@ def rated_speed_torque(dataframe,X_point_name,y_point_name,title,path,limit_pn,x
     ax.plot(detect_data[X_point_name],k1*detect_data[X_point_name],label='最小二乘拟合回归线',color='lightgreen',linewidth=3)
     if rated_lines:
         ax.vlines(x=rated_speed**2/standardize_times,ymin=y_min,ymax=y_max,color='red',linestyles='dotted',label=f'额定转速={rated_speed}',linewidth=5)
-        rated_torque_display = int(rated_torque*9549.5) if y_point_name!='变流器转矩反馈' else rated_torque
+        rated_torque_display = int(rated_torque*9549.5) if y_point_name not in ('变流器转矩反馈','实际扭矩') else rated_torque
         ax.hlines(y=rated_torque,xmin = x_min,xmax=x_max,color='red',linestyles='dotted',label=f'额定转矩={rated_torque_display}',linewidth=5)
     ax.legend(loc=legend_loc)
     # ax.set_title(f'[{bin-0.25}°,{bin+0.25}°)区间的功率曲线',fontdict={'fontsize':20,'fontweight':'bold'})

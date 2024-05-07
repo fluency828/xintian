@@ -9,7 +9,7 @@ from matplotlib import rcParams
 # import io
 # import zipfile
 # from pathlib import Path
-from site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda
+from site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing
 from utils import save_data,save_figures
 import matplotlib as mpl
 import io
@@ -35,39 +35,44 @@ st.title('风场数据分析报告')
 st.markdown('# 查看原始数据')
 phase_name = st.sidebar.selectbox(
     label='请输入您选择的风场',
-    options=('昆头岭明阳',
+    options=('昆头岭明阳(新)',
+             '昆头岭明阳(旧)',
              '康庄运达',
              '魁通沟金风四期',
-             '魁通沟金风五六期'),
+             '魁通沟金风五六期',
+             '若羌三期远景'),
     help='不同风场可能对应不同的数据格式和测点名称')
 
 ####
-site_dictionary = {'昆头岭明阳':Kuntouling_mingyang,
+site_dictionary = {'昆头岭明阳(新)':Kuntouling_mingyang,
+                   '昆头岭明阳(旧)':Kuntouling_mingyang,
                    '魁通沟金风四期':kuitonggou_jinfeng,
                    '魁通沟金风五六期':kuitonggou_jinfeng,
                    '康庄运达':kangzhuang_yunda,
+                   '若羌三期远景':RuoQiang_yuanjing,
                    }
 site_model = site_dictionary[phase_name]
 ####
 
-if phase_name=='昆头岭明阳':
-    # pn_dictionary = {
-    #     'phase_name':phase_name,
-    #     'wtg_pn':'风机',
-    #     'time_pn':'时间',
-    #     'type_pn':'风机类型',
-    #     'P_pn':'平均电网有功功率',
-    #     'w_pn':'平均风速',
-    #     'angle_pn':'平均桨叶角度1a',
-    #     'cabin_north_angle':'平均机舱对北角度',
-    #     'wind_north_angle':'平均风向对北角度',
-    #     'generator_speed_pn':'平均发电机转速1',
-    #     'cabin_temp_pn':'平均机舱温度',
-    #     'Large_components_temp' : ['平均齿轮箱前轴承温度','平均齿轮箱后轴承温度','平均发电机前轴承温度','平均发电机后轴承温度',
-    #                 '平均齿轮箱主轴承温度','平均齿轮箱油温',],
-    #     'generator_temp' : ['平均发电机绕组温度1','平均发电机绕组温度2','平均发电机绕组温度3','平均发电机绕组温度4','平均发电机绕组温度5','平均发电机绕组温度6'],
-    #     'pitch_motor_temp' : ['平均桨叶电机1温度','平均桨叶电机2温度','平均桨叶电机3温度']
-    # }
+if phase_name=='昆头岭明阳(旧)':
+    pn_dictionary = {
+        'phase_name':phase_name,
+        'wtg_pn':'风机',
+        'time_pn':'时间',
+        'type_pn':'风机类型',
+        'P_pn':'平均电网有功功率',
+        'w_pn':'平均风速',
+        'angle_pn':'平均桨叶角度1a',
+        'cabin_north_angle':'平均机舱对北角度',
+        'wind_north_angle':'平均风向对北角度',
+        'generator_speed_pn':'平均发电机转速1',
+        'cabin_temp_pn':'平均机舱温度',
+        'Large_components_temp' : ['平均齿轮箱前轴承温度','平均齿轮箱后轴承温度','平均发电机前轴承温度','平均发电机后轴承温度',
+                    '平均齿轮箱主轴承温度','平均齿轮箱油温',],
+        'generator_temp' : ['平均发电机绕组温度1','平均发电机绕组温度2','平均发电机绕组温度3','平均发电机绕组温度4','平均发电机绕组温度5','平均发电机绕组温度6'],
+        'pitch_motor_temp' : ['平均桨叶电机1温度','平均桨叶电机2温度','平均桨叶电机3温度']
+    }
+elif phase_name=='昆头岭明阳(新)':
     pn_dictionary = {
         'phase_name':phase_name,
         'wtg_pn':'device_name',
@@ -138,12 +143,45 @@ elif phase_name == '康庄运达':
         'generator_temp' : ['发电机定子U相线圈温度', '发电机定子V相线圈温度','发电机定子W相线圈温度'],
         'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']        
     }
-
-# ROOT_PATH = st.sidebar.text_input('文件路径')
-# raw_data_path = ROOT_PATH + st.sidebar.selectbox(label='选择原始数据文件',
-#                            options=os.listdir(ROOT_PATH))
-# pw_cur_path = 'pw_theory_cur/'+st.sidebar.selectbox(label='选择理论功率数据文件',
-#                            options=os.listdir('pw_theory_cur/'))
+elif phase_name == '若羌三期远景':
+    pn_dictionary = {
+        'phase_name':phase_name,
+        'wtg_pn':'device_id',
+        'time_pn':'data_time',
+        'type_pn':'风机类型',
+        'P_pn':'发电机有功功率',
+        'w_pn':'风速',
+        'torque_pn':'实际扭矩',
+        'angle_pn1':'桨叶片角度1',
+        'angle_pn2':'桨叶片角度2',
+        'angle_pn3':'桨叶片角度3',
+        'inter_angle_pn':'瞬时机舱中轴线与风向夹角',
+        'generator_speed_pn':'发电机转速',
+        'vibrate_x_pn':'机舱横向振动值',
+        'vibrate_y_pn':'机舱侧向振动值',
+        'cabin_temp_pn':'舱内温度',
+        'Large_components_temp' : [
+                                # '主变绕组温度',
+                                '主轴承内圈温度', 
+                                '主轴承外圈温度', 
+                                '主轴承温度', 
+                                '齿轮箱中速轴非驱动端轴承温度', 
+                                '齿轮箱中速轴驱动端轴承温度',
+                                '齿轮箱油池温度', 
+                                '齿轮箱高速轴非驱动端轴承温度', 
+                                '齿轮箱高速轴驱动端轴承温度',
+                                '发电机非驱动端轴承温度',
+                                '发电机驱动端轴承温度',
+                                # '发电机出风口温度', 
+                                '塔底柜温度',
+                                ],
+        'generator_temp' : ['发电机定子U相线圈温度', 
+                            '发电机定子V相线圈温度',
+                            '发电机定子W相线圈温度',],
+        'pitch_motor_temp' :  ['1号桨电机温度',
+                                '2号桨电机温度',
+                                '3号桨电机温度']      
+    }
 
 raw_data_path = st.sidebar.file_uploader('上传原始数据')
 # pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
@@ -157,16 +195,18 @@ if raw_data_path is not None:
 else:
     raw_data = load_data('eg_data/raw_data.csv')
 
-if phase_name=='昆头岭明阳':
+if phase_name=='昆头岭明阳(旧)' or phase_name=='昆头岭明阳(新)':
     pw_cur_path = 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx'
 elif phase_name=='康庄运达':
     pw_cur_path = 'pw_theory_cur/康庄运达理论功率曲线.xlsx'
 elif (phase_name=='魁通沟金风四期') or (phase_name == '魁通沟金风五六期'):
     pw_cur_path = 'pw_theory_cur/魁通沟金风理论功率曲线.xlsx'
+elif phase_name == '若羌三期远景':
+    pw_cur_path = 'pw_theory_cur/若羌三期远景理论功率曲线.xlsx'
 else:
     pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
-theory_pw_cur = pd.read_excel(pw_cur_path if pw_cur_path else 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx')
+theory_pw_cur = pd.read_excel(pw_cur_path)
 
 # print(site_model.print_attribute)
 pn_dictionary['raw_data'] = raw_data
@@ -239,8 +279,10 @@ del size_changing,site_instance.torque_speed_data
 st.markdown('# 偏航对风')
 
 ####
-yaw_result_df,yaw_angle_hist,yaw_result_list = site_instance.yaw_warning()
+yaw_result_df,yaw_angle_hist,yaw_angle_power_scatter,yaw_result_list = site_instance.yaw_warning()
 ####
+
+st.pyplot(yaw_angle_power_scatter)
 
 st.markdown(f'剔除限功率点后数据形状{site_instance.gen_data.shape}')
 
@@ -324,7 +366,7 @@ st.markdown('# 大部件文件预警（非满发）')
 # st.write(site_instance.full_pw)
 if_verbose = st.selectbox('是否标明详细情况',options=[False,True,])
 Large_components_fig_single = site_instance.gen_Large_components_temp_single(if_notation=if_verbose)
-st.markdown(f'有 {len(Large_components_fig_single )} 台风机发电机绕组温度对比异常')
+st.markdown(f'有 {len(Large_components_fig_single )} 台风机温度异常')
 col_ls = st.columns(4)
 for i,figs in enumerate(Large_components_fig_single ):
     with col_ls[i%4]:

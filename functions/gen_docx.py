@@ -40,7 +40,7 @@ class gen_document():
     
     def gen_docx(self):
         # print(1)
-        self.document.add_heading('大部件温度异常',level=2)
+        self.document.add_heading('3.1 大部件温度异常',level=2)
         if len(self.Large_component_fig_ls)>0:
             self.gen_Large_component_paragraph()
         # print(1)
@@ -62,15 +62,15 @@ class gen_document():
         else: 
             self.document.add_paragraph('变桨电机温度同风机不同相对比无异常')
         # print(1)
-        self.document.add_heading('偏航对风',level=2)
-        if self.yaw_data is not None:
-            self.gen_table_paragraph(self.yaw_data)
-        # print(1)
-        self.document.add_heading('转矩控制',level=2)
+        self.document.add_heading('3.2 转矩控制',level=2)
         if len(self.torque_fig_ls)>0:
             self.gen_all_wtg_paragraph(self.torque_fig_ls)
         # print(1)
-        self.document.add_heading('桨叶角度对零',level=2)
+        self.document.add_heading('3.3 偏航对风',level=2)
+        if self.yaw_data is not None:
+            self.gen_table_paragraph(self.yaw_data)
+        # print(1)
+        self.document.add_heading('3.4 桨叶角度对零',level=2)
         if len(self.blade_pw_fig_ls)>0:
             self.gen_all_wtg_paragraph(self.blade_pw_fig_ls)
         if len(self.blade_time_fig_ls)>0:
@@ -118,4 +118,5 @@ class gen_document():
             for j in range(len(row)):
                 # print(j,list(row))
                 row_cells[j].text = str(list(row)[j])
-            
+
+
