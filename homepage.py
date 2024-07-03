@@ -5,19 +5,20 @@ import matplotlib.pyplot as plt
 
 import os
 import matplotlib.dates as mdate
-from matplotlib import rcParams
+
 # import io
 # import zipfile
 # from pathlib import Path
-from site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing
+from site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing,Kuntouling_jinfeng
 from utils import save_data,save_figures
-import matplotlib as mpl
+
 import io
 import openpyxl
 from functions.gen_docx import gen_document
 # import math
 # print(math.version)
-
+from matplotlib import rcParams
+import matplotlib as mpl
 mpl.font_manager.fontManager.addfont('字体/SIMSUN.ttf')
 config = {
     "font.family":'serif',
@@ -32,29 +33,31 @@ plt.rcParams['axes.unicode_minus'] = False
 
 ########################## 正式开始网页！###################
 st.title('风场数据分析报告')
-st.markdown('# 查看原始数据')
+
 phase_name = st.sidebar.selectbox(
     label='请输入您选择的风场',
-    options=('昆头岭明阳(新)',
-             '昆头岭明阳(旧)',
+    options=('昆头岭明阳(大数据平台导出)',
+             '昆头岭明阳(风场导出)',
              '康庄运达',
              '魁通沟金风四期',
              '魁通沟金风五六期',
-             '若羌三期远景'),
+             '若羌三期远景',
+             '昆头岭金风'),
     help='不同风场可能对应不同的数据格式和测点名称')
-
+st.markdown('# 查看原始数据')
 ####
-site_dictionary = {'昆头岭明阳(新)':Kuntouling_mingyang,
-                   '昆头岭明阳(旧)':Kuntouling_mingyang,
+site_dictionary = {'昆头岭明阳(大数据平台导出)':Kuntouling_mingyang,
+                   '昆头岭明阳(风场导出)':Kuntouling_mingyang,
                    '魁通沟金风四期':kuitonggou_jinfeng,
                    '魁通沟金风五六期':kuitonggou_jinfeng,
                    '康庄运达':kangzhuang_yunda,
                    '若羌三期远景':RuoQiang_yuanjing,
+                   '昆头岭金风':Kuntouling_jinfeng,
                    }
 site_model = site_dictionary[phase_name]
 ####
 
-if phase_name=='昆头岭明阳(旧)':
+if phase_name=='昆头岭明阳(风场导出)':
     pn_dictionary = {
         'phase_name':phase_name,
         'wtg_pn':'风机',
@@ -72,7 +75,7 @@ if phase_name=='昆头岭明阳(旧)':
         'generator_temp' : ['平均发电机绕组温度1','平均发电机绕组温度2','平均发电机绕组温度3','平均发电机绕组温度4','平均发电机绕组温度5','平均发电机绕组温度6'],
         'pitch_motor_temp' : ['平均桨叶电机1温度','平均桨叶电机2温度','平均桨叶电机3温度']
     }
-elif phase_name=='昆头岭明阳(新)':
+elif phase_name=='昆头岭明阳(大数据平台导出)':
     pn_dictionary = {
         'phase_name':phase_name,
         'wtg_pn':'device_name',
@@ -182,6 +185,25 @@ elif phase_name == '若羌三期远景':
                                 '2号桨电机温度',
                                 '3号桨电机温度']      
     }
+elif phase_name=='昆头岭金风':
+    pn_dictionary = {
+        'phase_name':phase_name,
+        'wtg_pn':'device_name',
+        'time_pn':'data_time',
+        'type_pn':'风机类型',
+        'P_pn':'发电机有功功率',
+        'w_pn':'风速',
+        'angle_pn':'桨叶片角度1',
+        'inter_angle_pn':'机舱与风向夹角',
+        'generator_speed_pn':'发电机转速',
+        'blade_dif_pn':'blade_dif',
+        'cabin_temp_pn':'舱内温度',
+        'Large_components_temp' : ['发电机轴承温度1', '发电机轴承温度2',],
+        'generator_temp' : ['发电机绕组温度1','发电机绕组温度2', '发电机绕组温度3', '发电机绕组温度4',
+        '发电机绕组温度5', '发电机绕组温度6', '发电机绕组温度7', '发电机绕组温度8', '发电机绕组温度9','发电机绕组温度10',
+        '发电机绕组温度11', '发电机绕组温度12'],
+        'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']
+    }
 
 raw_data_path = st.sidebar.file_uploader('上传原始数据')
 # pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
@@ -195,16 +217,25 @@ if raw_data_path is not None:
 else:
     raw_data = load_data('eg_data/raw_data.csv')
 
-if phase_name=='昆头岭明阳(旧)' or phase_name=='昆头岭明阳(新)':
+if phase_name=='昆头岭明阳(风场导出)' or phase_name=='昆头岭明阳(大数据平台导出)':
     pw_cur_path = 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx'
+    thr_path = 'error_threshold/昆头岭明阳故障阈值.xlsx'
 elif phase_name=='康庄运达':
     pw_cur_path = 'pw_theory_cur/康庄运达理论功率曲线.xlsx'
+    thr_path = 'error_threshold/康庄运达故障阈值.xlsx'
 elif (phase_name=='魁通沟金风四期') or (phase_name == '魁通沟金风五六期'):
     pw_cur_path = 'pw_theory_cur/魁通沟金风理论功率曲线.xlsx'
+    thr_path = 'error_threshold/魁通沟金风故障阈值.xlsx'
 elif phase_name == '若羌三期远景':
     pw_cur_path = 'pw_theory_cur/若羌三期远景理论功率曲线.xlsx'
-else:
+    thr_path = 'error_threshold/若羌三期远景故障阈值.xlsx'
+elif phase_name == '昆头岭金风':
+    pw_cur_path = 'pw_theory_cur/昆头岭金风理论功率曲线.xlsx'
+    thr_path = 'error_threshold/昆头岭金风故障阈值.xlsx'
+
+if not (os.path.exists(pw_cur_path)) :
     pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
+
 
 theory_pw_cur = pd.read_excel(pw_cur_path)
 
@@ -237,7 +268,7 @@ fig_limit_power,size_changing = site_instance.limit_power()
 st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{size_changing}')
 st.pyplot(fig_limit_power)
 
-st.markdown('剔除限电后的数据')
+st.markdown('标记限电后的数据')
 st.write(site_instance.raw_data_1)
 
 def to_excel(df):
@@ -282,7 +313,7 @@ st.markdown('# 偏航对风')
 yaw_result_df,yaw_angle_hist,yaw_angle_power_scatter,yaw_result_list = site_instance.yaw_warning()
 ####
 
-st.pyplot(yaw_angle_power_scatter)
+# st.pyplot(yaw_angle_power_scatter)
 
 st.markdown(f'剔除限功率点后数据形状{site_instance.gen_data.shape}')
 
@@ -293,9 +324,9 @@ st.write(yaw_result_df)
 del site_instance.yaw_data
 
 st.markdown('# 桨叶角度对零')
-
+if_compare = st.selectbox('是否与同型号所有风机比较',options=[True,False,])
 ####
-blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type = site_instance.blade_warning()
+blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type = site_instance.blade_warning(compare=if_compare)
 ####
 
 st.markdown(f'原始数据形状{site_instance.raw_data.shape}')
@@ -307,6 +338,7 @@ for i,figs in enumerate(fig_ls_blade_type):
         st.pyplot(figs)
 
 st.write(blade_result_df)
+
 st.markdown('功率-桨叶角度散点图')
 col_ls = st.columns(4)
 for i,figs in enumerate(fig_ls_blade):
@@ -323,7 +355,7 @@ del site_instance.blade_data
 #####
 site_instance.full_time()
 all_data = site_instance.get_all_data()
-site_instance.set_error_threshold()
+
 ################################
 st.markdown('# 满发后大部件温度预警')
 st.markdown('all data')
@@ -346,6 +378,9 @@ st.write(site_instance.all_data.describe())
 
 
 st.markdown('error threshold')
+# st.write(f'thr_path{thr_path}')
+
+site_instance.set_error_threshold(path = thr_path)
 st.write(site_instance.scene_df)
 
 if_n = st.selectbox('是否带文字标注',options=[True,False])

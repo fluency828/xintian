@@ -407,7 +407,7 @@ def plot_single_scene(wtg_df,
     y_axis_min = min(y_min-5,0)
     abnormal = hlines[0]
     if (abnormal is None) | (y_max<abnormal):
-        print(f'{point_name}测点无异常数据')
+        # print(f'{point_name}测点无异常数据')
         return None
     else:
         print(f'自动标注,数据最大值为：{round(y_max,2)}，异常阈值：{abnormal}')
@@ -439,7 +439,7 @@ def plot_single_scene(wtg_df,
         if thre is not None:
             ax.hlines(y=thre,xmax=x_max,xmin=x_min,color='#B22222',linestyles='dotted',alpha=0.8)
             ax.text(x=x_min,y=thre,s=f'{annotation_name[i]}={thre}℃',color='#B22222',ha = 'left',va='bottom')
-    abnormal_data = wtg_df[wtg_df[point_name]>abnormal].reset_index()
+    abnormal_data = wtg_df[wtg_df[point_name]>=abnormal].reset_index()
     abnormal_data['row_num'] = np.arange(abnormal_data.shape[0])
     abnormal_data['index_dif'] = abnormal_data['index']-abnormal_data['row_num']
     ax.scatter(abnormal_data[time_pn],abnormal_data[point_name],color='red',edgecolors=edgecolor,s=point_size,alpha=point_alpha)
@@ -451,6 +451,7 @@ def plot_single_scene(wtg_df,
     alarm_result['max_value'] = groupby.max()[point_name]
     alarm_result = alarm_result.reset_index(drop=True)
     text_list = []
+    text_verbose =''
     for i,info in alarm_result.iterrows():
         # if i%2==0:
         max_n = round(info['max_value'],2)
@@ -465,9 +466,10 @@ def plot_single_scene(wtg_df,
         if notation:
             ax.vlines(x=stime,ymax=(max_y+5),ymin=y_axis_min,color='#B22222',linestyles='dotted',alpha=0.8)
         text_verbose = ','.join(text_list)
+    print(text_verbose)
     text = f'{wtg_id}风机{point_name}超过{abnormal}℃，最高达到{y_max}℃。'
     if notation: #是否自动标注图片情况
-        text = text +  text_verbose
+        text = text + text_verbose
     # 创建文本框，将文本置于文本框内
     bbox = { "alpha": 0.5,'facecolor':'white','pad':0.5,'edgecolor':'#DCDCDC','boxstyle':'round'}
     # 所有文本使用统一的样式

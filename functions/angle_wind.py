@@ -110,7 +110,7 @@ def plot_angle_power(dataframe,wtg=None,wtg_point_name = '风机',y_point_name =
                 point_size=50,edgecolor='face',point_alpha=0.9,color='y',\
                 labelsize = 15,titlesize=28,style='default',grid=False,path=None,title=None,\
                 legend_cols = 1,legend_loc='best',sharpness=500,comparison=True,x_margin=0.5,\
-                save_figure=True
+                save_figure=True,day_interval=5
             ):
     '''
     画出传入风机数据的桨叶角度-风速散点图，不同风机用不同颜色标识。
@@ -165,6 +165,7 @@ def plot_angle_power(dataframe,wtg=None,wtg_point_name = '风机',y_point_name =
         # print(wtg,len(y))
         # 绘制散点图，并设置颜色
         if comparison:
+            # print('画出对比图')
             ax.scatter(dataframe[x_point_name],dataframe[y_point_name],\
                     label='其余同型号风机',color='#CDC9C9',edgecolors=edgecolor,s=point_size,alpha=1)
         ax.scatter(x, y, label=wtg, color=color,\
@@ -198,7 +199,7 @@ def plot_angle_power(dataframe,wtg=None,wtg_point_name = '风机',y_point_name =
         ax.set_title(title,fontdict = {'fontsize':titlesize,'fontweight':'bold'})
 
     if x_point_name==time_point_name:
-        x_major_locator = mdate.DayLocator(interval=5)
+        x_major_locator = mdate.DayLocator(interval=day_interval)
     else:
         x_major_locator = MultipleLocator(max((x_point_max-x_point_min)/50,x_margin))
     # print(x_point_max,x_point_min)
