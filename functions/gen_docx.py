@@ -1,9 +1,11 @@
 import pandas as pd
 from docx import Document 
-from docx.shared import Cm
+from docx.shared import Cm,Pt
 import math
 import io
 from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+from docx.enum.table import WD_TABLE_ALIGNMENT
 
 class gen_document():
     def __init__(self,
@@ -35,9 +37,18 @@ class gen_document():
         self.instance = instance
         self.document = Document()
         self.document.styles['Normal'].font.name = 'Times New Roman'
-        self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
+        self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
+        self.set_orientation_landscape()
         self.gen_docx()
-    
+
+    def set_orientation_landscape(self):
+        """
+        设置页面方向为横向
+        """
+        section = self.document.sections[0]
+        new_width, new_height = section.page_height, section.page_width
+        section.page_width = new_width
+        section.page_height = new_height
     def gen_docx(self):
         # print(1)
         self.document.add_heading('3.1 大部件温度异常',level=2)
@@ -81,12 +92,18 @@ class gen_document():
     def gen_all_wtg_paragraph(self,figure_list):
         row = math.ceil(len(figure_list)/4)
         table = self.document.add_table(rows=row,cols=4)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER # 表格居中对齐
         for i,cell in enumerate(table._cells):
             if i<len(figure_list):
-                run = cell.add_paragraph().add_run()
+                # run = cell.add_paragraph().add_run()
                 buf = io.BytesIO()
                 figure_list[i].savefig(buf,dpi=300,facecolor='white',format='jpg',bbox_inches='tight')
+                buf.seek(0)
+                cell_paragraph = cell.paragraphs[0]
+                run = cell_paragraph.add_run()
                 run.add_picture(buf,height=Cm(3.2))
+                run.font.name = 'Times New Roman'
+                run._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
                 buf.close()
             else:
                 break
@@ -96,12 +113,18 @@ class gen_document():
         for i,scene in enumerate(scene_list):
             self.document.add_heading(f'{i+1}、{scene}',level=3)
             table = self.document.add_table(rows=1,cols=2)
+            table.alignment = WD_TABLE_ALIGNMENT.CENTER # 表格居中对齐
             for j,cell in enumerate(table._cells):
-                run = cell.add_paragraph().add_run()
+                # run = cell.add_paragraph().add_run()
                 # run.add_picture(self.Large_component_fig_ls[i*2+j],height=Cm(5.5))
                 buf = io.BytesIO()
                 self.Large_component_fig_ls[i*2+j].savefig(buf,dpi=300,facecolor='white',format='jpg',bbox_inches='tight')
+                buf.seek(0)
+                cell_paragraph = cell.paragraphs[0]
+                run = cell_paragraph.add_run()                
                 run.add_picture(buf,height=Cm(5.5))
+                run.font.name = 'Times New Roman'
+                run._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
                 buf.close()
 
     
@@ -118,5 +141,4 @@ class gen_document():
             for j in range(len(row)):
                 # print(j,list(row))
                 row_cells[j].text = str(list(row)[j])
-
 

@@ -8,7 +8,7 @@ import os
 plt.rc('font',family = 'YouYuan')
 import sys
 sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
-from xintian.power_limited import limit_power_delete
+# from xintian.power_limited import limit_power_delete
 
 def outlier_detection_wls(detect_data,X_point_name,y_point_name,threshold,title,path,x_ticks_n=20):
     '''

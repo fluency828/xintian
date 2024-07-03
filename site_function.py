@@ -111,8 +111,8 @@ class Kuntouling_mingyang():
         return figure_limit_power,size_change
     
     def full_time(self,
-                  pw_diff_threshold=[500,500],
-                  type_ls = ['MySE4.0MW','MySE5.0MW'],
+                  pw_diff_threshold=[1000,1000],
+                  type_ls = ['MySE4.0MW','MySE5.0MW'], 
                   rated_pw_ls = [4000,5000,]):
         all_wtg = []
         for _,wtg_info in self.wtg_list.iterrows():

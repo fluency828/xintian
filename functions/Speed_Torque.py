@@ -8,7 +8,7 @@ import os
 # plt.rc('font',family = 'YouYuan')
 import sys
 sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
-from xintian.power_limited import limit_power_delete
+# from xintian.power_limited import limit_power_delete
 import streamlit as st
 
 
