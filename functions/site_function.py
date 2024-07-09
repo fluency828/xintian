@@ -249,7 +249,7 @@ class Kuntouling_mingyang():
         result_list=[]
         for _,wtg_info in self.wtg_list.iterrows():
             wtg_id,wtg_type = wtg_info
-            wtg_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)  if not compare else self.blade_data
+            wtg_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)  if not compare else self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
             # save_path = ROOT_PATH +f'桨叶角度/{title1}.jpg'
             if (wtg_data.shape[0] ==0) or (wtg_data[wtg_data[self.angle_pn]<5].shape[0] ==0):
                 continue
@@ -722,17 +722,17 @@ class kuitonggou_jinfeng():
         if os.path.exists(path):
             self.scene_df = pd.read_excel(path)
         else:
-            scene_list = self.generator_temp_ls + self.Large_components_temp_ls
+            scene_list =  self.Large_components_temp_ls + self.generator_temp_ls
             if self.phase_name == '魁通沟金风四期':
-                warning_thre = [None]*12+[75]*2
-                error_thre = [140]*12+[80]*2
-                abnormal_thre = [130]*12 + [70]*2
-                abnormal_thre2 = [120]*12 + [60]*2
+                warning_thre = [75]*2 + [None]*12
+                error_thre = [80]*2 + [140]*12
+                abnormal_thre = [70]*2 + [130]*12 
+                abnormal_thre2 = [60]*2 + [120]*12 
             elif self.phase_name == '魁通沟金风五六期':
                 warning_thre = [None,None,None,None,None]
-                error_thre = [150,80,80,90,90]
-                abnormal_thre = [140,70,70,80,80]
-                abnormal_thre2 = [110,100,100,100,100]
+                error_thre = [80,80,90,90,150,]
+                abnormal_thre = [70,70,80,80,140,]
+                abnormal_thre2 = [100,100,100,100,110,]
             self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,
@@ -2003,11 +2003,11 @@ class Kuntouling_jinfeng():
         if os.path.exists(path):
             self.scene_df = pd.read_excel(path)
         else:
-            scene_list = self.generator_temp_ls + self.Large_components_temp_ls
-            warning_thre = [None]*12+[75]*2
-            error_thre = [140]*12+[80]*2
-            abnormal_thre = [130]*12 + [70]*2
-            abnormal_thre2 = [120]*12 + [60]*2
+            scene_list =  self.Large_components_temp_ls + self.generator_temp_ls
+            warning_thre = [75]*2 + [None]*12
+            error_thre = [80]*2 + [140]*12
+            abnormal_thre =[70]*2 + [130]*12 
+            abnormal_thre2 = [60]*2 + [120]*12 
             self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,

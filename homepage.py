@@ -9,7 +9,7 @@ import matplotlib.dates as mdate
 # import io
 # import zipfile
 # from pathlib import Path
-from site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing,Kuntouling_jinfeng
+from functions.site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing,Kuntouling_jinfeng
 from functions.utils import save_data,save_figures
 
 import io
@@ -19,6 +19,7 @@ from functions.gen_docx import gen_document
 # print(math.version)
 from matplotlib import rcParams
 import matplotlib as mpl
+import json
 mpl.font_manager.fontManager.addfont('字体/SIMSUN.ttf')
 config = {
     "font.family":'serif',
@@ -55,160 +56,9 @@ site_dictionary = {'昆头岭明阳(大数据平台导出)':Kuntouling_mingyang,
                    '昆头岭金风':Kuntouling_jinfeng,
                    }
 site_model = site_dictionary[phase_name]
-####
-
-if phase_name=='昆头岭明阳(风场导出)':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'风机',
-        'time_pn':'时间',
-        'type_pn':'风机类型',
-        'P_pn':'平均电网有功功率',
-        'w_pn':'平均风速',
-        'angle_pn':'平均桨叶角度1a',
-        'cabin_north_angle':'平均机舱对北角度',
-        'wind_north_angle':'平均风向对北角度',
-        'generator_speed_pn':'平均发电机转速1',
-        'cabin_temp_pn':'平均机舱温度',
-        'Large_components_temp' : ['平均齿轮箱前轴承温度','平均齿轮箱后轴承温度','平均发电机前轴承温度','平均发电机后轴承温度',
-                    '平均齿轮箱主轴承温度','平均齿轮箱油温',],
-        'generator_temp' : ['平均发电机绕组温度1','平均发电机绕组温度2','平均发电机绕组温度3','平均发电机绕组温度4','平均发电机绕组温度5','平均发电机绕组温度6'],
-        'pitch_motor_temp' : ['平均桨叶电机1温度','平均桨叶电机2温度','平均桨叶电机3温度']
-    }
-elif phase_name=='昆头岭明阳(大数据平台导出)':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'device_name',
-        'time_pn':'data_time',
-        'type_pn':'风机类型',
-        'P_pn':'发电机有功功率',
-        'w_pn':'风速',
-        'angle_pn':'桨叶角度1B',
-        'cabin_north_angle':'机舱对北角度',
-        'wind_north_angle':'风向对北角度',
-        'generator_speed_pn':'发电机转速',
-        'cabin_temp_pn':'舱内温度',
-        'Large_components_temp' : ['齿轮箱前轴承温度','齿轮箱后轴承温度','发电机驱动端轴承温度','发电机非驱动端轴承温度',
-                     '齿轮箱主轴承温度', '齿轮箱油池温度',],
-        'generator_temp' : ['发电机绕组温度1', '发电机绕组温度2', '发电机绕组温度3', '发电机绕组温度4', '发电机绕组温度5', '发电机绕组温度6'],
-        'pitch_motor_temp' : ['1号桨电机温度', '2号桨电机温度', '3号桨电机温度']
-    }  
-elif phase_name=='魁通沟金风四期':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'device_id',
-        'time_pn':'data_time',
-        'type_pn':'风机类型',
-        'P_pn':'发电机有功功率',
-        'w_pn':'风速',
-        'angle_pn':'桨叶片角度1',
-        'inter_angle_pn':'机舱与风向夹角',
-        'generator_speed_pn':'发电机转速瞬时值',
-        'blade_dif_pn':'blade_dif',
-        'cabin_temp_pn':'舱内温度',
-        'Large_components_temp' : ['发电机驱动端轴承温度', '发电机非驱动端轴承温度',],
-        'generator_temp' : ['发电机绕组温度1','发电机绕组温度2', '发电机绕组温度3', '发电机绕组温度4',
-        '发电机绕组温度5', '发电机绕组温度6', '发电机绕组温度7', '发电机绕组温度8', '发电机绕组温度9','发电机绕组温度10',
-        '发电机绕组温度11', '发电机绕组温度12'],
-        'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']
-    }
-elif phase_name == '魁通沟金风五六期':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'device_id',
-        'time_pn':'data_time',
-        'type_pn':'风机类型',
-        'P_pn':'发电机有功功率',
-        'w_pn':'风速',
-        'angle_pn':'桨叶片角度1',
-        'inter_angle_pn':'机舱与风向夹角',
-        'generator_speed_pn':'发电机转速瞬时值',
-        'blade_dif_pn':'blade_dif',
-        'cabin_temp_pn':'舱内温度',
-        'Large_components_temp' : ['发电机前轴承外圈温度','发电机后轴承外圈温度', '发电机前轴承内圈温度', '发电机后轴承内圈温度'],
-        'generator_temp' : ['发电机绕组温度最大值',],
-        'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']
-    }
-elif phase_name == '康庄运达':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'device_name',
-        'time_pn':'data_time',
-        'type_pn':'风机类型',
-        'P_pn':'发电机有功功率',
-        'generator_speed_pn':'发电机转速',
-        'generator_torque_pn':'变流器转矩反馈',
-        'w_pn':'风速',
-        'angle_pn':'桨叶片角度1',
-        'inter_angle_pn':'对风误差',
-        'cabin_temp_pn':'舱内温度',
-        'Large_components_temp' : ['主轴承温度','齿轮箱油池温度','齿轮箱高速轴驱动端轴承温度','齿轮箱高速轴非驱动端轴承温度','发电机驱动端轴承温度', '发电机非驱动端轴承温度', ],
-        'generator_temp' : ['发电机定子U相线圈温度', '发电机定子V相线圈温度','发电机定子W相线圈温度'],
-        'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']        
-    }
-elif phase_name == '若羌三期远景':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'device_id',
-        'time_pn':'data_time',
-        'type_pn':'风机类型',
-        'P_pn':'发电机有功功率',
-        'w_pn':'风速',
-        'torque_pn':'实际扭矩',
-        'angle_pn1':'桨叶片角度1',
-        'angle_pn2':'桨叶片角度2',
-        'angle_pn3':'桨叶片角度3',
-        'inter_angle_pn':'瞬时机舱中轴线与风向夹角',
-        'generator_speed_pn':'发电机转速',
-        'vibrate_x_pn':'机舱横向振动值',
-        'vibrate_y_pn':'机舱侧向振动值',
-        'cabin_temp_pn':'舱内温度',
-        'Large_components_temp' : [
-                                # '主变绕组温度',
-                                '主轴承内圈温度', 
-                                '主轴承外圈温度', 
-                                '主轴承温度', 
-                                '齿轮箱中速轴非驱动端轴承温度', 
-                                '齿轮箱中速轴驱动端轴承温度',
-                                '齿轮箱油池温度', 
-                                '齿轮箱高速轴非驱动端轴承温度', 
-                                '齿轮箱高速轴驱动端轴承温度',
-                                '发电机非驱动端轴承温度',
-                                '发电机驱动端轴承温度',
-                                # '发电机出风口温度', 
-                                '塔底柜温度',
-                                ],
-        'generator_temp' : ['发电机定子U相线圈温度', 
-                            '发电机定子V相线圈温度',
-                            '发电机定子W相线圈温度',],
-        'pitch_motor_temp' :  ['1号桨电机温度',
-                                '2号桨电机温度',
-                                '3号桨电机温度']      
-    }
-elif phase_name=='昆头岭金风':
-    pn_dictionary = {
-        'phase_name':phase_name,
-        'wtg_pn':'device_name',
-        'time_pn':'data_time',
-        'type_pn':'风机类型',
-        'P_pn':'发电机有功功率',
-        'w_pn':'风速',
-        'angle_pn':'桨叶片角度1',
-        'inter_angle_pn':'机舱与风向夹角',
-        'generator_speed_pn':'发电机转速',
-        'blade_dif_pn':'blade_dif',
-        'cabin_temp_pn':'舱内温度',
-        'Large_components_temp' : ['发电机轴承温度1', '发电机轴承温度2',],
-        'generator_temp' : ['发电机绕组温度1','发电机绕组温度2', '发电机绕组温度3', '发电机绕组温度4',
-        '发电机绕组温度5', '发电机绕组温度6', '发电机绕组温度7', '发电机绕组温度8', '发电机绕组温度9','发电机绕组温度10',
-        '发电机绕组温度11', '发电机绕组温度12'],
-        'pitch_motor_temp' : ['1号变桨电机温度', '2号变桨电机温度','3号变桨电机温度']
-    }
 
 raw_data_path = st.sidebar.file_uploader('上传原始数据')
-# pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
-# @st.cache_data
 def load_data(url):
     df = pd.read_csv(url)
     return df
@@ -220,21 +70,36 @@ else:
 if phase_name=='昆头岭明阳(风场导出)' or phase_name=='昆头岭明阳(大数据平台导出)':
     pw_cur_path = 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx'
     thr_path = 'error_threshold/昆头岭明阳故障阈值.xlsx'
+    json_path = 'point_name/昆头岭明阳(大数据平台导出)测点.json' if phase_name=='昆头岭明阳(大数据平台导出)' else 'point_name/昆头岭明阳(风场导出)测点.json'
 elif phase_name=='康庄运达':
     pw_cur_path = 'pw_theory_cur/康庄运达理论功率曲线.xlsx'
     thr_path = 'error_threshold/康庄运达故障阈值.xlsx'
+    json_path = 'point_name/康庄运达测点.json'
 elif (phase_name=='魁通沟金风四期') or (phase_name == '魁通沟金风五六期'):
     pw_cur_path = 'pw_theory_cur/魁通沟金风理论功率曲线.xlsx'
     thr_path = 'error_threshold/魁通沟金风故障阈值.xlsx'
+    json_path = 'point_name/魁通沟金风四期测点.json' if phase_name == '魁通沟金风四期' else 'point_name/魁通沟金风五六期测点.json'
+
 elif phase_name == '若羌三期远景':
     pw_cur_path = 'pw_theory_cur/若羌三期远景理论功率曲线.xlsx'
     thr_path = 'error_threshold/若羌三期远景故障阈值.xlsx'
+    json_path = 'point_name/若羌三期远景测点.json'
+
 elif phase_name == '昆头岭金风':
     pw_cur_path = 'pw_theory_cur/昆头岭金风理论功率曲线.xlsx'
     thr_path = 'error_threshold/昆头岭金风故障阈值.xlsx'
+    json_path = 'point_name/昆头岭金风测点.json'
 
 if not (os.path.exists(pw_cur_path)) :
     pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
+
+if not (os.path.exists(json_path)) :
+    json_path = st.sidebar.file_uploader('上传测点配置JSON文件',type='json')
+    pn_dictionary = json.loads(json_path.read())
+else:
+    f = open(json_path, 'r')
+    content = f.read()
+    pn_dictionary = json.loads(content)
 
 
 theory_pw_cur = pd.read_excel(pw_cur_path)
@@ -458,20 +323,5 @@ if word:
         file_name = f'{phase_name}.docx',
         mime = 'docx'
     )
-
-
-
-
-# save = st.button('save_all_results')
-# if save:
-#     save_figures(ROOT_PATH+'limit_power/',fig_limit_power,'limit_power.png')
-#     save_data(ROOT_PATH+'转矩控制/',torque_results_df,'斜率结果.xlsx')
-#     for i,fig in enumerate(torque_fig_ls):
-#         save_figures(ROOT_PATH+'转矩控制/',fig,f'{i}.jpg')
-#     save_data(ROOT_PATH+'偏航对风/',yaw_result_df,'预警结果.xlsx')
-#     save_data(ROOT_PATH+'桨叶角度/',blade_result_df,'桨叶角度最小值.xlsx')
-#     for i,fig in enumerate(fig_ls_blade):
-#         save_figures(ROOT_PATH+f'桨叶角度/',fig,f'功率-桨叶角度{i}.jpg')
-#         save_figures(ROOT_PATH+'桨叶角度/',fig_ls_blade_time[i],f'桨叶角度-时间{i}.jpg')
 
 

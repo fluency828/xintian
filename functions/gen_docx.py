@@ -4,7 +4,7 @@ from docx.shared import Cm,Pt
 import math
 import io
 from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
+# from docx.oxml import OxmlElement
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
 class gen_document():
@@ -39,6 +39,7 @@ class gen_document():
         self.document.styles['Normal'].font.name = 'Times New Roman'
         self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
         self.set_orientation_landscape()
+        self.set_margins()
         self.gen_docx()
 
     def set_orientation_landscape(self):
@@ -49,6 +50,17 @@ class gen_document():
         new_width, new_height = section.page_height, section.page_width
         section.page_width = new_width
         section.page_height = new_height
+
+    def set_margins(self):
+        """
+        设置页面边距
+        """
+        section = self.document.sections[0]
+        section.top_margin = Cm(3.18)
+        section.bottom_margin = Cm(3.18)
+        section.left_margin = Cm(2.54)
+        section.right_margin = Cm(2.54)
+
     def gen_docx(self):
         # print(1)
         self.document.add_heading('3.1 大部件温度异常',level=2)
