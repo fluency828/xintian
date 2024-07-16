@@ -253,7 +253,8 @@ class Kuntouling_mingyang():
             # save_path = ROOT_PATH +f'桨叶角度/{title1}.jpg'
             if (wtg_data.shape[0] ==0) or (wtg_data[wtg_data[self.angle_pn]<5].shape[0] ==0):
                 continue
-            min_angle = wtg_data[self.angle_pn].min()
+            min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
+            min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
             # print(wtg_id)
             # print(np.unique(wtg_data[self.wtg_pn]))
@@ -678,7 +679,8 @@ class kuitonggou_jinfeng():
             wtg_id,wtg_type = wtg_info
             wtg_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)  if not compare else self.blade_data
             # save_path = ROOT_PATH +f'桨叶角度/{title1}.jpg'
-            min_angle = wtg_data[self.angle_pn].min()
+            min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
+            min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
             figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
                                        wtg=wtg_id,
@@ -1094,7 +1096,8 @@ class kangzhuang_yunda():
             wtg_id,wtg_type = wtg_info
             wtg_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)  if not compare else self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
             # save_path = ROOT_PATH +f'桨叶角度/{title1}.jpg'
-            min_angle = wtg_data[self.angle_pn].min()
+            min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
+            min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
             figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
                                        wtg=wtg_id,
@@ -1476,7 +1479,8 @@ class RuoQiang_yuanjing():
             wtg_id,wtg_type = wtg_info
             wtg_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True) if not compare else self.blade_data
             # save_path = ROOT_PATH +f'桨叶角度/{title1}.jpg'
-            min_angle = wtg_data[self.angle_pn1].min()
+            min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
+            min_angle = wtg_data[blade_pn].min() if not compare else min_data[blade_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
             figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[blade_pn]<5].reset_index(drop=True),
                                        wtg=wtg_id,
@@ -1959,7 +1963,8 @@ class Kuntouling_jinfeng():
             wtg_id,wtg_type = wtg_info
             wtg_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True) if not compare else self.blade_data
             # save_path = ROOT_PATH +f'桨叶角度/{title1}.jpg'
-            min_angle = wtg_data[self.angle_pn].min()
+            min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
+            min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
             figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
                                        wtg=wtg_id,
