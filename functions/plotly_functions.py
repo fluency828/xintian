@@ -100,3 +100,31 @@ def plot_blade_power_all(blade_df,blade_pn='桨叶角度1',Pw_pn = '发电机有
     ax.set_title(title,size=20)
     plt.close()
     return fig
+
+def plot_wind_power(
+                    wtg_data,
+                    x_pn,
+                    y1_pn,
+                    y2_pn,
+                    title,
+                    rated_power=5000
+                    ):
+        # 创建图形
+        fig, ax1 = plt.subplots(figsize=(15,8))
+
+        color = 'tab:blue'
+        ax1.set_xlabel('时间')
+        ax1.set_ylabel('有功功率 (kW)', color=color)
+        ax1.plot(wtg_data[x_pn], wtg_data[y1_pn], color=color)
+        ax1.set_ylim(-10,rated_power+100)
+        ax1.tick_params(axis='y', labelcolor=color)
+
+        ax2 = ax1.twinx()  # 创建共享x轴的第二个y轴
+        color = 'tab:red'
+        ax2.set_ylabel('风速 (m/s)', color=color)
+        ax2.plot(wtg_data[x_pn], wtg_data[y2_pn], color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
+        fig.suptitle(title,fontsize=20)
+        fig.tight_layout()  # 调整布局以防止标签重叠
+        plt.close()
+        return fig

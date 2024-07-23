@@ -113,13 +113,32 @@ site_instance = site_model(**pn_dictionary)
 
 del raw_data,theory_pw_cur,pn_dictionary
 
-st.write('原始数据')
-st.write(site_instance.raw_data)
-st.markdown('原始数据概况：')
-st.write(site_instance.raw_data.describe())
+col_ls = st.columns(2)
+with col_ls[0]:
+    st.write('原始数据')
+    st.write(site_instance.raw_data)
+with col_ls[1]:
+    st.markdown('原始数据概况：')
+    st.write(site_instance.raw_data.describe())
+
 st.markdown(f'原始数据大小为{site_instance.raw_data.shape}')
-st.markdown('wtg list')
-st.write(site_instance.wtg_list)
+
+col_ls = st.columns(2)
+with col_ls[0]:
+    st.markdown('wtg list')
+    st.write(site_instance.wtg_list)
+with col_ls[1]:
+    st.markdown('各风机原始数据概况')
+    st.write(site_instance.raw_data.groupby(site_instance.wtg_pn).describe())
+
+st.markdown('## 风速-功率其基本情况查看')
+pw_wind_fig_ls = site_instance.gen_pw_wind()
+col_ls = st.columns(4)
+for i,figs in enumerate(pw_wind_fig_ls):
+    with col_ls[i%4]:
+        st.pyplot(figs)
+
+del pw_wind_fig_ls
 
 st.markdown('# 处理限功率点')
 
@@ -133,8 +152,14 @@ fig_limit_power,size_changing = site_instance.limit_power()
 st.markdown(f'原始数据、剔除限电后、剔除功率小于等于0后的数据大小分别为{size_changing}')
 st.pyplot(fig_limit_power)
 
-st.markdown('标记限电后的数据')
-st.write(site_instance.raw_data_1)
+col_ls = st.columns(2)
+with col_ls[0]:
+    st.markdown('标记限电后的数据')
+    st.write(site_instance.raw_data_1)
+with col_ls[1]:
+    st.markdown('各风机去除限电后数据情况')
+    st.write(site_instance.gen_data.groupby(site_instance.wtg_pn).describe())
+
 
 def to_excel(df):
     output = io.BytesIO()
@@ -143,9 +168,11 @@ def to_excel(df):
     output.close()
     return processed_data
 df_csv = to_excel(site_instance.raw_data_1)
-st.download_button(label='📥 Download Current Result',
+st.download_button(label='📥 下载标记限电后的数据',
                                 data=df_csv,
                                 file_name= 'raw_data_1.csv')
+
+
 
 
 
@@ -190,12 +217,20 @@ del site_instance.yaw_data
 
 st.markdown('# 桨叶角度对零')
 if_compare = st.selectbox('是否与同型号所有风机比较',options=[True,False,])
+col_ls = st.columns(2)
+with col_ls[0]:
+    blade_lo = st.slider('选择桨叶角度图的最小值',-10,5,-2,1)
+with col_ls[1]:
+    blade_up = st.slider('选择桨叶角度的最大值',5,20,10,1)
+
 ####
 blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type = site_instance.blade_warning(compare=if_compare)
 ####
 
 st.markdown(f'原始数据形状{site_instance.raw_data.shape}')
 st.markdown(f'仅保留桨叶角度正常值（剔除缺失值和小于-7，大于100的异常值）的数据大小{site_instance.blade_data.shape}')
+
+
 
 col_ls = st.columns(len(fig_ls_blade_type))
 for i,figs in enumerate(fig_ls_blade_type):

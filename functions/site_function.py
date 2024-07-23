@@ -1,6 +1,7 @@
 # import streamlit as st
 import numpy as np
 import pandas as pd
+# import matplotlib.pyplot as plt
 # import matplotlib.pyplot as figure
 
 import sys
@@ -13,7 +14,7 @@ import matplotlib.dates as mdate
 import sys
 # sys.path.append('D:/OneDrive - CUHK-Shenzhen/utils/')
 from functions.power_limited import limit_power_detect_loc,limit_power_detect_loc_Goldwind
-from functions.plotly_functions import plot_limit_power,plot_yaw_angle,plot_blade_power_all,plot_yaw_scatter
+from functions.plotly_functions import plot_limit_power,plot_yaw_angle,plot_blade_power_all,plot_yaw_scatter,plot_wind_power
 from matplotlib import rcParams
 from functions.Speed_Torque import rated_speed_torque
 # from functions.useful_tools import figs2zip
@@ -233,8 +234,12 @@ class Kuntouling_mingyang():
     def blade_warning(self,
                       point_s=10,
                       point_c='r',
-                      compare = False):
+                      compare = False,
+                      blade_up = 10,
+                      blade_low = -2):
         self.blade_data = self.raw_data[(self.raw_data[self.angle_pn]>-7)&(self.raw_data[self.angle_pn]<100)].reset_index(drop=True)
+        self.blade_data = self.blade_data[(self.blade_data[self.angle_pn]>blade_low)&(self.blade_data[self.angle_pn]<blade_up)].reset_index(drop=True)
+
         fig_ls_blade_type = []
         for wtg_type in np.unique(self.wtg_list[self.type_pn]):
             use_data = self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
@@ -258,7 +263,7 @@ class Kuntouling_mingyang():
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
             # print(wtg_id)
             # print(np.unique(wtg_data[self.wtg_pn]))
-            figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure1 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.P_pn,
@@ -273,7 +278,7 @@ class Kuntouling_mingyang():
                                        comparison=compare,
                                        save_figure=False)
             title2 = f'{wtg_id}风机桨叶角度-时间散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure2 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure2 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.angle_pn,
@@ -438,6 +443,27 @@ class Kuntouling_mingyang():
                                           save_fig=False)
             if fig is not None:
                 fig_ls.append(fig)
+        return fig_ls
+
+    def gen_pw_wind(self,
+                type_ls = ['MySE4.0MW','MySE5.0MW'], 
+                rated_pw_ls = [4000,5000,]):
+        fig_ls = []
+        for i,wtg_info in self.wtg_list.iterrows():
+            wtg_id,type = wtg_info
+            wtg_data = self.raw_data[self.raw_data[self.wtg_pn] == wtg_id].reset_index(drop=True)
+
+            title = f'{wtg_id}风机风速、有功功率时序图'
+            for j in range(len(type_ls)):
+                if type_ls[j] == type:
+                    fig = plot_wind_power(wtg_data,
+                                        self.time_pn,
+                                        self.P_pn,
+                                        self.w_pn,
+                                        title=title,
+                                        rated_power = rated_pw_ls[j])
+            # 在当前列中展示图形
+            fig_ls.append(fig)
         return fig_ls
 
 
@@ -661,8 +687,11 @@ class kuitonggou_jinfeng():
     def blade_warning(self,
                       point_s=10,
                       point_c='r',
-                      compare = False):
+                      compare = False,
+                      blade_up = 10,
+                      blade_low = -2):
         self.blade_data = self.raw_data[(self.raw_data[self.angle_pn]>-7)&(self.raw_data[self.angle_pn]<100)].reset_index(drop=True)
+        self.blade_data = self.blade_data[(self.blade_data[self.angle_pn]>blade_low)&(self.blade_data[self.angle_pn]<blade_up)].reset_index(drop=True)
         fig_ls_blade_type = []
         for wtg_type in np.unique(self.wtg_list[self.type_pn]):
             use_data = self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
@@ -682,7 +711,7 @@ class kuitonggou_jinfeng():
             min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
             min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure1 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.P_pn,
@@ -697,7 +726,7 @@ class kuitonggou_jinfeng():
                                        comparison=compare,
                                        save_figure=False)
             title2 = f'{wtg_id}风机桨叶角度-时间散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure2 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure2 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.angle_pn,
@@ -870,7 +899,26 @@ class kuitonggou_jinfeng():
             if fig is not None:
                 fig_ls.append(fig)
         return fig_ls
+    def gen_pw_wind(self,
+                  type_ls = ['GW121_2500','GW140_3400'],
+                  rated_pw_ls = [2500,3400,]):
+        fig_ls = []
+        for i,wtg_info in self.wtg_list.iterrows():
+            wtg_id,type = wtg_info
+            wtg_data = self.raw_data[self.raw_data[self.wtg_pn] == wtg_id].reset_index(drop=True)
 
+            title = f'{wtg_id}风机风速、有功功率时序图'
+            for j in range(len(type_ls)):
+                if type_ls[j] == type:
+                    fig = plot_wind_power(wtg_data,
+                                        self.time_pn,
+                                        self.P_pn,
+                                        self.w_pn,
+                                        title=title,
+                                        rated_power = rated_pw_ls[j])
+            # 在当前列中展示图形
+            fig_ls.append(fig)
+        return fig_ls
 
 
 class kangzhuang_yunda():
@@ -1078,8 +1126,12 @@ class kangzhuang_yunda():
     def blade_warning(self,
                       point_s=10,
                       point_c='r',
-                      compare = False):
+                      compare = False,
+                      blade_up = 10,
+                      blade_low = -2):
         self.blade_data = self.raw_data[(self.raw_data[self.angle_pn]>-7)&(self.raw_data[self.angle_pn]<100)].reset_index(drop=True)
+        self.blade_data = self.blade_data[(self.blade_data[self.angle_pn]>blade_low)&(self.blade_data[self.angle_pn]<blade_up)].reset_index(drop=True)
+
         fig_ls_blade_type = []
         for wtg_type in np.unique(self.wtg_list[self.type_pn]):
             use_data = self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
@@ -1099,7 +1151,7 @@ class kangzhuang_yunda():
             min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
             min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure1 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.P_pn,
@@ -1114,7 +1166,7 @@ class kangzhuang_yunda():
                                        comparison=compare,
                                        save_figure=False)
             title2 = f'{wtg_id}风机桨叶角度-时间散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure2 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure2 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.angle_pn,
@@ -1278,21 +1330,28 @@ class kangzhuang_yunda():
             if fig is not None:
                 fig_ls.append(fig)
         return fig_ls
+    def gen_pw_wind(self,
+                  type_ls = ['WD140-2500','WD147-2500'],
+                  rated_pw_ls = [2500,2500]):
+        fig_ls = []
+        for i,wtg_info in self.wtg_list.iterrows():
+            wtg_id,type = wtg_info
+            wtg_data = self.raw_data[self.raw_data[self.wtg_pn] == wtg_id].reset_index(drop=True)
 
-####################### test #####################
-# ROOT_PATH = 'D:/1 新天\数字运营部 任务\昆头岭手动分析/12月/'
-# raw_data_path = ROOT_PATH+'raw_data.csv'
-# raw_df = pd.read_csv(raw_data_path)
-# theory_cur_df = pd.read_excel('D:/1 新天/数字运营部 任务/昆头岭手动分析/理论功率曲线.xlsx')
-# raw_df_11 = pd.read_csv('D:/1 新天\数字运营部 任务\昆头岭手动分析/11月/raw_data.csv')
+            title = f'{wtg_id}风机风速、有功功率时序图'
+            for j in range(len(type_ls)):
+                if type_ls[j] == type:
+                    fig = plot_wind_power(wtg_data,
+                                        self.time_pn,
+                                        self.P_pn,
+                                        self.w_pn,
+                                        title=title,
+                                        rated_power = rated_pw_ls[j])
+            # 在当前列中展示图形
+            fig_ls.append(fig)
+        return fig_ls
 
 
-
-# kuitonggou_instance = kuitonggou_jinfeng(raw_df_11,theory_cur_df)
-# fig_limit_power,size_changing = kuitonggou_instance.limit_power()
-# torque_results_df,torque_fig_ls = kuitonggou_instance.torque_speed_warning()
-# yaw_result_df,yaw_angle_hist,yaw_result_list = kuitonggou_instance.yaw_warning()
-# blade_result_df,fig_ls_blade,fig_ls_blade_time,fig_ls_blade_type = kuitonggou_instance.blade_warning()
 
 class RuoQiang_yuanjing():
     def __init__(self,raw_data,theory_pw_cur,
@@ -1429,6 +1488,9 @@ class RuoQiang_yuanjing():
         for _,wtg_info in  self.wtg_list.iterrows():
             wtg_id,types = wtg_info
             wtg_data =  self.torque_speed_data[ self.torque_speed_data[ self.wtg_pn]==wtg_id].reset_index(drop=True)
+            # print('wtg_data',wtg_data.shape)
+            if wtg_data.shape[0]<40:
+                continue
             t2 = f'{wtg_id}最小二乘拟合,型号{types}'
             if types=='EN-192-6.25':
                 k,figure1 = rated_speed_torque(wtg_data,
@@ -1457,12 +1519,15 @@ class RuoQiang_yuanjing():
     def blade_warning(self,
                       point_s=10,
                       point_c='r',
-                      root_path ='None',
+                    #   root_path ='None',
                       save_figure=False,
                       blade_pn = '桨叶片角度1',
-                      compare = False):
+                      compare = False,
+                      blade_up = 10,
+                      blade_low = -2):
         
         self.blade_data = self.raw_data[(self.raw_data[self.angle_pn1]>-7)&(self.raw_data[self.angle_pn1]<100)].reset_index(drop=True)
+        self.blade_data = self.blade_data[(self.blade_data[self.angle_pn1]>blade_low)&(self.blade_data[self.angle_pn1]<blade_up)].reset_index(drop=True)
         fig_ls_blade_type = []
         for wtg_type in np.unique(self.wtg_list[self.type_pn]):
             use_data = self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
@@ -1482,7 +1547,7 @@ class RuoQiang_yuanjing():
             min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
             min_angle = wtg_data[blade_pn].min() if not compare else min_data[blade_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[blade_pn]<5].reset_index(drop=True),
+            figure1 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn1]<blade_up)&(wtg_data[self.angle_pn1]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.P_pn,
@@ -1496,9 +1561,9 @@ class RuoQiang_yuanjing():
                                        color=point_c,
                                        comparison=compare,
                                        save_figure=save_figure,
-                                       path = root_path+f'桨叶角度对零/{title1}.jpg')
+                                       path = None)
             title2 = f'{wtg_id}风机桨叶角度-时间散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure2 = plot_angle_power(dataframe=wtg_data[wtg_data[blade_pn]<5].reset_index(drop=True),
+            figure2 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn1]<blade_up)&(wtg_data[self.angle_pn1]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=blade_pn,
@@ -1512,7 +1577,7 @@ class RuoQiang_yuanjing():
                                        color=point_c,
                                        comparison=False,
                                        save_figure=save_figure,
-                                       path = root_path+f'桨叶角度对零/{title2}.jpg')
+                                       path = None)
 
             fig_ls_blade.append(figure1)
             fig_ls_blade_time.append(figure2)
@@ -1733,6 +1798,27 @@ class RuoQiang_yuanjing():
                 fig_ls.append(fig)
         return fig_ls
 
+    def gen_pw_wind(self,
+                  type_ls = ['EN-192-6.25'],
+                  rated_pw_ls = [6250]):
+        fig_ls = []
+        for i,wtg_info in self.wtg_list.iterrows():
+            wtg_id,type = wtg_info
+            wtg_data = self.raw_data[self.raw_data[self.wtg_pn] == wtg_id].reset_index(drop=True)
+
+            title = f'{wtg_id}风机风速、有功功率时序图'
+            for j in range(len(type_ls)):
+                if type_ls[j] == type:
+                    fig = plot_wind_power(wtg_data,
+                                        self.time_pn,
+                                        self.P_pn,
+                                        self.w_pn,
+                                        title=title,
+                                        rated_power = rated_pw_ls[j])
+            # 在当前列中展示图形
+            fig_ls.append(fig)
+        return fig_ls
+
 class Kuntouling_jinfeng():
     def __init__(self,raw_data,theory_pw_cur,
     phase_name = '魁通沟金风四期',
@@ -1945,8 +2031,12 @@ class Kuntouling_jinfeng():
     def blade_warning(self,
                       point_s=10,
                       point_c='r',
-                      compare = False):
+                      compare = False,
+                      blade_up = 10,
+                      blade_low = -2):
         self.blade_data = self.raw_data[(self.raw_data[self.angle_pn]>-7)&(self.raw_data[self.angle_pn]<100)].reset_index(drop=True)
+        self.blade_data = self.blade_data[(self.blade_data[self.angle_pn]>blade_low)&(self.blade_data[self.angle_pn]<blade_up)].reset_index(drop=True)
+
         fig_ls_blade_type = []
         for wtg_type in np.unique(self.wtg_list[self.type_pn]):
             use_data = self.blade_data[self.blade_data[self.type_pn]==wtg_type].reset_index(drop=True)
@@ -1966,7 +2056,7 @@ class Kuntouling_jinfeng():
             min_data = self.blade_data[self.blade_data[self.wtg_pn]==wtg_id].reset_index(drop=True)
             min_angle = wtg_data[self.angle_pn].min() if not compare else min_data[self.angle_pn].min()
             title1 = f'{wtg_id}风机有功功率-桨叶角度散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure1 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure1 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.P_pn,
@@ -1981,7 +2071,7 @@ class Kuntouling_jinfeng():
                                        comparison=compare,
                                        save_figure=False)
             title2 = f'{wtg_id}风机桨叶角度-时间散点图，型号{wtg_type},桨叶角最小值{min_angle}'.replace('/','_')
-            figure2 = plot_angle_power(dataframe=wtg_data[wtg_data[self.angle_pn]<5].reset_index(drop=True),
+            figure2 = plot_angle_power(dataframe=wtg_data[(wtg_data[self.angle_pn]<blade_up)&(wtg_data[self.angle_pn]>blade_low)].reset_index(drop=True),
                                        wtg=wtg_id,
                                        wtg_point_name=self.wtg_pn,
                                        y_point_name=self.angle_pn,
@@ -2147,4 +2237,24 @@ class Kuntouling_jinfeng():
                                           save_fig=False)
             if fig is not None:
                 fig_ls.append(fig)
+        return fig_ls
+    def gen_pw_wind(self,
+                  type_ls = ['GW121_2500','GW140_3400'],
+                  rated_pw_ls = [2500,3400,]):
+        fig_ls = []
+        for i,wtg_info in self.wtg_list.iterrows():
+            wtg_id,type = wtg_info
+            wtg_data = self.raw_data[self.raw_data[self.wtg_pn] == wtg_id].reset_index(drop=True)
+
+            title = f'{wtg_id}风机风速、有功功率时序图'
+            for j in range(len(type_ls)):
+                if type_ls[j] == type:
+                    fig = plot_wind_power(wtg_data,
+                                        self.time_pn,
+                                        self.P_pn,
+                                        self.w_pn,
+                                        title=title,
+                                        rated_power = rated_pw_ls[j])
+            # 在当前列中展示图形
+            fig_ls.append(fig)
         return fig_ls

@@ -10,7 +10,7 @@ def yaw_result_generate(wtg_ls,data_df,yaw_angle_bin_pn='机舱与风向夹角_b
         # if not os.path.exists(path):
         #     os.makedirs(path)
         wtg_data = data_df[data_df[wtg_pn]==wtg_id].reset_index(drop=True)
-        if wtg_data.shape[0]==0:
+        if wtg_data.shape[0]<40:
             continue
         gb = wtg_data[['P_th',P_pn,yaw_angle_bin_pn,yaw_angle_pn]].groupby(yaw_angle_bin_pn)
         #各角度计数
