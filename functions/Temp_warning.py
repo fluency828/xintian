@@ -14,7 +14,7 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
             all_color =None ,point_alpha=1,grid=False,\
             wtg_pn='风机',time_pn='data_time',path=None,title=None,legend_cols = 1,\
             legend_loc = 'lower right',sharpness=200,hlines=[None,None,None,None],\
-            annotation_name=['异常值','告警值','故障值','温升异常值'],notation=True,\
+            annotation_name=['异常','告警','故障','温升异常'],notation=True,\
             save_fig=True):
     '''
     画出传入风机数据的指定测点的散点图，不同风机用不同颜色标识。
@@ -91,11 +91,11 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
     ax.yaxis.set_major_locator(y_major_locator)
     # 画出告警值和故障值横线（如果有）
     for i,thre in enumerate(hlines[:-1]):
-        if i==0:
-            continue
+        # if i==0:
+        #     continue
         if thre is not None:
             ax.hlines(y=thre,xmax=max_x,xmin=0,color='#B22222',linestyles='dotted',alpha=0.8)
-            ax.text(x=0,y=thre,s=f'{annotation_name[i]}={thre}℃',color='#B22222',ha = 'left',va='bottom')
+            ax.text(x=0,y=thre,s=f'{annotation_name[i]}{round(thre,0)}',color='#B22222',ha = 'left',va='bottom')
     if '温升' in point_name:
         abnormal = hlines[-1]
     else:
@@ -365,7 +365,7 @@ def plot_single_scene(wtg_df,
                       title=None,
                       sharpness=200,
                       hlines=[None,None,None,None],
-                      annotation_name=['异常值','告警值','故障值','温升异常值'],
+                      annotation_name=['异常','告警','故障','温升异常值'],
                       notation=True,
                       save_fig=True,
                       day_sep=5):
@@ -438,7 +438,7 @@ def plot_single_scene(wtg_df,
     for i,thre in enumerate(hlines[:-1]):
         if thre is not None:
             ax.hlines(y=thre,xmax=x_max,xmin=x_min,color='#B22222',linestyles='dotted',alpha=0.8)
-            ax.text(x=x_min,y=thre,s=f'{annotation_name[i]}={thre}℃',color='#B22222',ha = 'left',va='bottom')
+            ax.text(x=x_min,y=thre,s=f'{annotation_name[i]}{round(thre,0)}',color='#B22222',ha = 'left',va='bottom')
     abnormal_data = wtg_df[wtg_df[point_name]>=abnormal].reset_index()
     abnormal_data['row_num'] = np.arange(abnormal_data.shape[0])
     abnormal_data['index_dif'] = abnormal_data['index']-abnormal_data['row_num']

@@ -1735,7 +1735,8 @@ class RuoQiang_yuanjing():
                                 wtg_id = wtg_id,
                                 hlines=[abnormal,warning,error,abnormal_k],
                                 notation=if_notation,
-                                save_fig=False)
+                                save_fig=False,
+                                day_sep=10)
                 if fig1 is not None:
                     figure_list.append(fig1)      
         return figure_list        
