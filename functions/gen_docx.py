@@ -18,7 +18,7 @@ class gen_document():
                  generator_temp_fig_ls,
                  pitch_motor_temp_fig_ls,
                  torque_fig_ls,
-                 yaw_data,
+                #  yaw_data,
                  blade_pw_fig_ls,
                  blade_time_fig_ls,
                  ):
@@ -31,7 +31,7 @@ class gen_document():
         self.generator_temp_fig_ls = generator_temp_fig_ls
         self.pitch_motor_temp_fig_ls = pitch_motor_temp_fig_ls
         self.torque_fig_ls = torque_fig_ls
-        self.yaw_data = yaw_data
+        # self.yaw_data = yaw_data
         self.blade_pw_fig_ls = blade_pw_fig_ls
         self.blade_time_fig_ls = blade_time_fig_ls
         self.instance = instance
@@ -85,13 +85,13 @@ class gen_document():
         else: 
             self.document.add_paragraph('变桨电机温度同风机不同相对比无异常')
         # print(1)
-        self.document.add_heading('3.2 转矩控制',level=2)
+        self.document.add_heading('3.2 偏航对风',level=2)
+        # if self.yaw_data is not None:
+        #     self.gen_table_paragraph(self.yaw_data)
+        # print(1)
+        self.document.add_heading('3.3 转矩控制',level=2)
         if len(self.torque_fig_ls)>0:
             self.gen_all_wtg_paragraph(self.torque_fig_ls)
-        # print(1)
-        self.document.add_heading('3.3 偏航对风',level=2)
-        if self.yaw_data is not None:
-            self.gen_table_paragraph(self.yaw_data)
         # print(1)
         self.document.add_heading('3.4 桨叶角度对零',level=2)
         if len(self.blade_pw_fig_ls)>0:

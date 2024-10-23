@@ -302,15 +302,15 @@ class Kuntouling_mingyang():
     def set_error_threshold(self,
                             path = None):
         # print(path)
-        if os.path.exists(path):
-            self.scene_df = pd.read_excel(path)
-        else:
-            scene_list = self.Large_components_temp_ls + self.generator_temp_ls
-            warning_thre = [None]*12
-            error_thre = [80,80,95,95,70,70] + [150]*6
-            abnormal_thre = [70,70,85,85,60,60] + [140]*6
-            abnormal_thre2 = [65,65,80,80,55,60] + [130]*6
-            self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
+        # if os.path.exists(path):
+        self.scene_df = pd.read_excel(path)
+        # else:
+        #     scene_list = self.Large_components_temp_ls + self.generator_temp_ls
+        #     warning_thre = [None]*12
+        #     error_thre = [80,80,95,95,70,70] + [150]*6
+        #     abnormal_thre = [70,70,85,85,60,60] + [140]*6
+        #     abnormal_thre2 = [65,65,80,80,55,60] + [130]*6
+        #     self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,
                                   if_notation=True):
@@ -750,21 +750,21 @@ class kuitonggou_jinfeng():
 
     def set_error_threshold(self,
                             path = None):
-        if os.path.exists(path):
-            self.scene_df = pd.read_excel(path)
-        else:
-            scene_list =  self.Large_components_temp_ls + self.generator_temp_ls
-            if self.phase_name == '魁通沟金风四期':
-                warning_thre = [75]*2 + [None]*12
-                error_thre = [80]*2 + [140]*12
-                abnormal_thre = [70]*2 + [130]*12 
-                abnormal_thre2 = [60]*2 + [120]*12 
-            elif self.phase_name == '魁通沟金风五六期':
-                warning_thre = [None,None,None,None,None]
-                error_thre = [80,80,90,90,150,]
-                abnormal_thre = [70,70,80,80,140,]
-                abnormal_thre2 = [100,100,100,100,110,]
-            self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
+        # if os.path.exists(path):
+        self.scene_df = pd.read_excel(path)
+        # else:
+        #     scene_list =  self.Large_components_temp_ls + self.generator_temp_ls
+        #     if self.phase_name == '魁通沟金风四期':
+        #         warning_thre = [75]*2 + [None]*12
+        #         error_thre = [80]*2 + [140]*12
+        #         abnormal_thre = [70]*2 + [130]*12 
+        #         abnormal_thre2 = [60]*2 + [120]*12 
+        #     elif self.phase_name == '魁通沟金风五六期':
+        #         warning_thre = [None,None,None,None,None]
+        #         error_thre = [80,80,90,90,150,]
+        #         abnormal_thre = [70,70,80,80,140,]
+        #         abnormal_thre2 = [100,100,100,100,110,]
+        #     self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,
                                   if_notation=True):
@@ -858,8 +858,8 @@ class kuitonggou_jinfeng():
                                          title= title,
                                          point_size=15,
                                          edgecolor='face',
-                                         divide_thre = 1.2,
-                                         diff_thre = 6,
+                                         divide_thre = 1.4,
+                                         diff_thre = 40,
                                          loc='lower left',
                                          if_hlines=if_h,
                                          day_sep=10,
@@ -1189,15 +1189,15 @@ class kangzhuang_yunda():
 
     def set_error_threshold(self,
                             path = None):
-        if os.path.exists(path):
-            self.scene_df = pd.read_excel(path)
-        else:
-            scene_list = self.Large_components_temp_ls + self.generator_temp_ls
-            warning_thre =[None,None,None,None,90,90,150,150,150]
-            error_thre = [65,75,90,90,95,95,155,155,155]
-            abnormal_thre = [55,65,80,80,85,85,145,145,145]
-            abnormal_thre2 = [1000]*9
-            self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
+        # if os.path.exists(path):
+        self.scene_df = pd.read_excel(path)
+        # # else:
+        #     scene_list = self.Large_components_temp_ls + self.generator_temp_ls
+        #     warning_thre =[None,None,None,None,90,90,150,150,150]
+        #     error_thre = [65,75,90,90,95,95,155,155,155]
+        #     abnormal_thre = [55,65,80,80,85,85,145,145,145]
+        #     abnormal_thre2 = [1000]*9
+        #     self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,
                                   if_notation=True):
@@ -1367,12 +1367,10 @@ class RuoQiang_yuanjing():
     angle_pn3='桨叶片角度3',
     inter_angle_pn = '瞬时机舱中轴线与风向夹角',
     generator_speed_pn = '发电机转速',
-    vibrate_x_pn = '机舱横向振动值',
-    vibrate_y_pn = '机舱侧向振动值',
+    # vibrate_x_pn = '机舱横向振动值',
+    # vibrate_y_pn = '机舱侧向振动值',
     cabin_temp_pn = '舱内温度',
     Large_components_temp = ['主变绕组温度',
-                             '主轴承内圈温度', 
-                             '主轴承外圈温度', 
                              '主轴承温度', 
                              '齿轮箱中速轴非驱动端轴承温度', 
                              '齿轮箱中速轴驱动端轴承温度',
@@ -1399,8 +1397,8 @@ class RuoQiang_yuanjing():
         self.angle_pn1 = angle_pn1
         self.angle_pn2 = angle_pn2
         self.angle_pn3 = angle_pn3
-        self.vibrate_x_pn = vibrate_x_pn
-        self.vibrate_y_pn = vibrate_y_pn
+        # self.vibrate_x_pn = vibrate_x_pn
+        # self.vibrate_y_pn = vibrate_y_pn
         self.inter_angle_pn = inter_angle_pn
         self.cabin_temp_pn = cabin_temp_pn
         self.Large_components_temp_ls = Large_components_temp
@@ -1427,8 +1425,8 @@ class RuoQiang_yuanjing():
                                   self.cabin_temp_pn,
                                   self.generator_speed_pn,
                                   self.generator_torque_pn,
-                                  self.vibrate_x_pn,
-                                  self.vibrate_y_pn,
+                                #   self.vibrate_x_pn,
+                                #   self.vibrate_y_pn,
                                   self.inter_angle_pn,
                                    ]+self.Large_components_temp_ls+
                                    self.generator_temp_ls+
@@ -1652,15 +1650,15 @@ class RuoQiang_yuanjing():
 
     def set_error_threshold(self,
                             path = None):
-        if os.path.exists(path):
-            self.scene_df = pd.read_excel(path)
-        else:
-            scene_list = self.Large_components_temp_ls + self.generator_temp_ls
-            warning_thre = [65,65,65,90,90,75,90,90,95,95,None,145,145,145]
-            error_thre = [70,70,70,95,95,80,95,95,100,100,58,155,155,155]
-            abnormal_thre = [60,60,60,80,80,70,80,80,90,90,50,140,140,140]
-            abnormal_thre2 = [55,55,55,75,75,65,75,75,85,85,45,135,135,135]
-            self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
+        # if os.path.exists(path):
+        self.scene_df = pd.read_excel(path)
+        # else:
+            # scene_list = self.Large_components_temp_ls + self.generator_temp_ls
+            # warning_thre = [65,65,65,90,90,75,90,90,95,95,None,145,145,145]
+            # error_thre = [70,70,70,95,95,80,95,95,100,100,58,155,155,155]
+            # abnormal_thre = [60,60,60,80,80,70,80,80,90,90,50,140,140,140]
+            # abnormal_thre2 = [55,55,55,75,75,65,75,75,85,85,45,135,135,135]
+            # self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
 
     def gen_Large_components_temp(self,
@@ -2096,15 +2094,15 @@ class Kuntouling_jinfeng():
 
     def set_error_threshold(self,
                             path = None):
-        if os.path.exists(path):
-            self.scene_df = pd.read_excel(path)
-        else:
-            scene_list =  self.Large_components_temp_ls + self.generator_temp_ls
-            warning_thre = [75]*2 + [None]*12
-            error_thre = [80]*2 + [140]*12
-            abnormal_thre =[70]*2 + [130]*12 
-            abnormal_thre2 = [60]*2 + [120]*12 
-            self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
+        # if os.path.exists(path):
+        self.scene_df = pd.read_excel(path)
+        # else:
+        #     scene_list =  self.Large_components_temp_ls + self.generator_temp_ls
+        #     warning_thre = [75]*2 + [None]*12
+        #     error_thre = [80]*2 + [140]*12
+        #     abnormal_thre =[70]*2 + [130]*12 
+        #     abnormal_thre2 = [60]*2 + [120]*12 
+        #     self.scene_df = pd.DataFrame({'scene_name':scene_list,'abnormal_thre':abnormal_thre,'warning_thre':warning_thre,'error_thre':error_thre,'abnormal_thre_k':abnormal_thre2})
 
     def gen_Large_components_temp(self,
                                   if_notation=True):
@@ -2198,8 +2196,8 @@ class Kuntouling_jinfeng():
                                          title= title,
                                          point_size=15,
                                          edgecolor='face',
-                                         divide_thre = 1.2,
-                                         diff_thre = 6,
+                                         divide_thre = 1.4,
+                                         diff_thre = 40,
                                          loc='lower left',
                                          if_hlines=if_h,
                                          day_sep=10,

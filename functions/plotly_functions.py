@@ -6,7 +6,15 @@ import streamlit as st
 import seaborn as sns
 import statsmodels.formula.api as smf
 import numpy as np
-def plotly_limit_power(data_before_delete,data_after_delete,theory_cur_data,x_pn='平均风速',y_pn = '平均电网有功功率',title='限功率前后对比',left_subplot_text = "去除限功率点前",right_subplot_text="去除限功率点后"):
+def plotly_limit_power(data_before_delete,
+                       data_after_delete,
+                       theory_cur_data,
+                       x_pn='平均风速',
+                       y_pn = '平均电网有功功率',
+                       title='限功率前后对比',
+                       left_subplot_text = "去除限功率点前",
+                       right_subplot_text="去除限功率点后"):
+    
     fig = make_subplots(rows=1, 
                         cols=2,
                         column_widths=[0.5,0.5],  # 重点：两个子图的宽度占比

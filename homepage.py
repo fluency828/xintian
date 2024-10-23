@@ -69,25 +69,25 @@ else:
 
 if phase_name=='昆头岭明阳(风场导出)' or phase_name=='昆头岭明阳(大数据平台导出)':
     pw_cur_path = 'pw_theory_cur/昆头岭明阳理论功率曲线.xlsx'
-    thr_path = 'error_threshold/昆头岭明阳故障阈值.xlsx'
+    thr_path = './error_threshold/昆头岭明阳故障阈值.xlsx'
     json_path = 'point_name/昆头岭明阳(大数据平台导出)测点.json' if phase_name=='昆头岭明阳(大数据平台导出)' else 'point_name/昆头岭明阳(风场导出)测点.json'
 elif phase_name=='康庄运达':
     pw_cur_path = 'pw_theory_cur/康庄运达理论功率曲线.xlsx'
-    thr_path = 'error_threshold/康庄运达故障阈值.xlsx'
+    thr_path = './error_threshold/康庄运达故障阈值.xlsx'
     json_path = 'point_name/康庄运达测点.json'
 elif (phase_name=='魁通沟金风四期') or (phase_name == '魁通沟金风五六期'):
     pw_cur_path = 'pw_theory_cur/魁通沟金风理论功率曲线.xlsx'
-    thr_path = 'error_threshold/魁通沟金风故障阈值.xlsx'
+    thr_path = './error_threshold/魁通沟金风四期故障阈值.xlsx' if phase_name == '魁通沟金风四期' else './error_threshold/魁通沟金风五六期故障阈值.xlsx'
     json_path = 'point_name/魁通沟金风四期测点.json' if phase_name == '魁通沟金风四期' else 'point_name/魁通沟金风五六期测点.json'
 
 elif phase_name == '若羌三期远景':
     pw_cur_path = 'pw_theory_cur/若羌三期远景理论功率曲线.xlsx'
-    thr_path = 'error_threshold/若羌三期远景故障阈值.xlsx'
+    thr_path = './error_threshold/若羌三期远景故障阈值.xlsx'
     json_path = 'point_name/若羌三期远景测点.json'
 
 elif phase_name == '昆头岭金风':
     pw_cur_path = 'pw_theory_cur/昆头岭金风理论功率曲线.xlsx'
-    thr_path = 'error_threshold/昆头岭金风故障阈值.xlsx'
+    thr_path = './error_threshold/昆头岭金风故障阈值.xlsx'
     json_path = 'point_name/昆头岭金风测点.json'
 
 if not (os.path.exists(pw_cur_path)) :
@@ -341,7 +341,7 @@ Doc = gen_document(site_instance,
              generator_temp_fig,
              pitch_motor_temp_fig,
              torque_fig_ls,
-             yaw_result_df,
+            #  yaw_result_df,
              fig_ls_blade,
              fig_ls_blade_time
              )
