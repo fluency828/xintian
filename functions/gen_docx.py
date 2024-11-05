@@ -18,7 +18,7 @@ class gen_document():
                  generator_temp_fig_ls,
                  pitch_motor_temp_fig_ls,
                  torque_fig_ls,
-                #  yaw_data,
+                 yaw_data,
                  blade_pw_fig_ls,
                  blade_time_fig_ls,
                  ):
@@ -31,7 +31,7 @@ class gen_document():
         self.generator_temp_fig_ls = generator_temp_fig_ls
         self.pitch_motor_temp_fig_ls = pitch_motor_temp_fig_ls
         self.torque_fig_ls = torque_fig_ls
-        # self.yaw_data = yaw_data
+        self.yaw_data = yaw_data
         self.blade_pw_fig_ls = blade_pw_fig_ls
         self.blade_time_fig_ls = blade_time_fig_ls
         self.instance = instance

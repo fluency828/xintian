@@ -355,7 +355,7 @@ Doc = gen_document(site_instance,
              generator_temp_fig,
              pitch_motor_temp_fig,
              torque_fig_ls,
-            #  yaw_result_df,
+             yaw_result_df,
              fig_ls_blade,
              fig_ls_blade_time
              )
