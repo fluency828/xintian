@@ -9,7 +9,7 @@ import matplotlib.dates as mdate
 # import io
 # import zipfile
 # from pathlib import Path
-from functions.site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing,Kuntouling_jinfeng
+from functions.site_function import Kuntouling_mingyang,kuitonggou_jinfeng,kangzhuang_yunda,RuoQiang_yuanjing,Kuntouling_jinfeng,Guanyun_mingyang_3200,Guanyun_mingyang_4000
 from functions.utils import save_data,save_figures
 
 import io
@@ -43,7 +43,9 @@ phase_name = st.sidebar.selectbox(
              '魁通沟金风四期',
              '魁通沟金风五六期',
              '若羌三期远景',
-             '昆头岭金风'),
+             '昆头岭金风',
+             '灌云明阳3.2',
+             '灌云明阳4.0'),
     help='不同风场可能对应不同的数据格式和测点名称')
 st.markdown('# 查看原始数据')
 ####
@@ -54,6 +56,8 @@ site_dictionary = {'昆头岭明阳(大数据平台导出)':Kuntouling_mingyang,
                    '康庄运达':kangzhuang_yunda,
                    '若羌三期远景':RuoQiang_yuanjing,
                    '昆头岭金风':Kuntouling_jinfeng,
+                   '灌云明阳3.2':Guanyun_mingyang_3200,
+                    '灌云明阳4.0':Guanyun_mingyang_4000,
                    }
 site_model = site_dictionary[phase_name]
 
@@ -90,6 +94,16 @@ elif phase_name == '昆头岭金风':
     thr_path = './error_threshold/昆头岭金风故障阈值.xlsx'
     json_path = 'point_name/昆头岭金风测点.json'
 
+elif phase_name == '灌云明阳3.2':
+    pw_cur_path = 'pw_theory_cur/灌云明阳3.2理论功率曲线.xlsx'
+    thr_path = './error_threshold/灌云明阳3.2故障阈值.xlsx'
+    json_path = 'point_name/灌云明阳3.2测点.json'
+
+elif phase_name == '灌云明阳4.0':
+    pw_cur_path = 'pw_theory_cur/灌云明阳4.0理论功率曲线.xlsx'
+    thr_path = './error_threshold/灌云明阳4.0故障阈值.xlsx'
+    json_path = 'point_name/灌云明阳4.0测点.json'
+
 if not (os.path.exists(pw_cur_path)) :
     pw_cur_path = st.sidebar.file_uploader('上传理论功率数据')
 
@@ -103,7 +117,7 @@ else:
 
 
 theory_pw_cur = pd.read_excel(pw_cur_path)
-
+# st.write(raw_data['变流器转矩设定值'])
 # print(site_model.print_attribute)
 pn_dictionary['raw_data'] = raw_data
 pn_dictionary['theory_pw_cur'] = theory_pw_cur

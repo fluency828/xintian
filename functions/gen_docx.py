@@ -86,8 +86,8 @@ class gen_document():
             self.document.add_paragraph('变桨电机温度同风机不同相对比无异常')
         # print(1)
         self.document.add_heading('3.2 偏航对风',level=2)
-        # if self.yaw_data is not None:
-        #     self.gen_table_paragraph(self.yaw_data)
+        if self.yaw_data is not None:
+            self.gen_table_paragraph(self.yaw_data)
         # print(1)
         self.document.add_heading('3.3 转矩控制',level=2)
         if len(self.torque_fig_ls)>0:

@@ -1,0 +1,33 @@
+{
+    "phase_name": "灌云明阳4.0",
+    "wtg_pn": "device_id",
+    "time_pn": "data_time",
+    "type_pn": "风机类型",
+    "P_pn": "发电机有功功率",
+    "w_pn": "风速",
+    "angle_pn": "桨叶角度1A",
+    "cabin_north_angle": "机舱对北角度",
+    "wind_north_angle": "风向",
+    "generator_speed_pn": "发电机转速",
+    "cabin_temp_pn": "舱内温度",
+    "Large_components_temp": [
+        "发电机前轴承温度",
+        "发电机后轴承温度",
+        "齿轮箱主轴承发电机侧温度T3",
+        "齿轮箱发电机侧轴承温度1",
+        "齿轮箱油温"
+    ],
+    "generator_temp": [
+        "发电机绕组温度1",
+        "发电机绕组温度2",
+        "发电机绕组温度3",
+        "发电机绕组温度4",
+        "发电机绕组温度5",
+        "发电机绕组温度6"
+    ],
+    "pitch_motor_temp": [
+        "变桨电机1温度",
+        "变桨电机2温度",
+        "变桨电机3温度"
+    ]
+}
