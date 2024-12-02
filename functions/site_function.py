@@ -2720,7 +2720,6 @@ class Guanyun_mingyang_4000():
     # generator_torque_pn = "变流器转矩设定值",
     Large_components_temp = ["发电机前轴承温度",
                              "发电机后轴承温度",
-                             "齿轮箱主轴承发电机侧温度T3",
                              "齿轮箱发电机侧轴承温度1",
                              "齿轮箱油温",
                              ],

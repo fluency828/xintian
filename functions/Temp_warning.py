@@ -47,7 +47,7 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
     返回图片中所用数据 pd.DataFrame
     返回图片对象：matplotlib fig
     '''
-    print('full pw', full_pw_df[[point_name]])
+    # print('full pw', full_pw_df[[point_name]])
     raw_data = full_pw_df[[wtg_pn,time_pn]+[point_name]]
     y_max = full_pw_df[point_name].max()
     y_min = full_pw_df[point_name].min()
@@ -86,7 +86,7 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
         max_y = max(y_max,hlines[-2])
     else:
         max_y = y_max
-    print(y_min,y_max,full_pw_df[point_name],full_pw_df.columns)
+    # print(y_min,y_max,full_pw_df[point_name],full_pw_df.columns)
     ax.set_ylim(y_axis_min,(max_y+5)) #最大、最小值前后延长5
     y_sep = (y_max-y_axis_min+5)//20
     y_major_locator = MultipleLocator(y_sep) #设置坐标轴间隔

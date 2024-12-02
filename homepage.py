@@ -374,3 +374,7 @@ if word:
     )
 
 
+# import matplotlib.font_manager as fm
+
+# # 列出所有系统字体
+# fonts = fm.findSystemFonts(fontpaths=None, fontext='ttf')

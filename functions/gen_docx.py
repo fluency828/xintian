@@ -1,6 +1,6 @@
 import pandas as pd
 from docx import Document 
-from docx.shared import Cm,Pt
+from docx.shared import Cm,Pt,RGBColor
 import math
 import io
 from docx.oxml.ns import qn
@@ -36,8 +36,11 @@ class gen_document():
         self.blade_time_fig_ls = blade_time_fig_ls
         self.instance = instance
         self.document = Document()
-        self.document.styles['Normal'].font.name = 'Times New Roman'
-        self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
+        # self.document.styles['Normal'].font.name = 'Times New Roman'
+        self.document.styles['Normal'].font.name = '宋体'
+        self.set_heading_styles(self.document) 
+        # run.font.name = '宋体'
+        # self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
         self.set_orientation_landscape()
         self.set_margins()
         self.gen_docx()
@@ -114,8 +117,9 @@ class gen_document():
                 cell_paragraph = cell.paragraphs[0]
                 run = cell_paragraph.add_run()
                 run.add_picture(buf,height=Cm(3.2))
-                run.font.name = 'Times New Roman'
-                run._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
+                # run.font.name = 'Times New Roman'
+                run.font.name = '宋体'
+                # run._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
                 buf.close()
             else:
                 break
@@ -135,11 +139,12 @@ class gen_document():
                 cell_paragraph = cell.paragraphs[0]
                 run = cell_paragraph.add_run()                
                 run.add_picture(buf,height=Cm(5.5))
-                run.font.name = 'Times New Roman'
-                run._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
+                # run.font.name = 'Times New Roman'
+                run.font.name = '宋体'
+                # run._element.rPr.rFonts.set(qn('w:eastAsia'), u'楷体')
                 buf.close()
 
-    
+
     def gen_table_paragraph(self,dataframe):
         table = self.document.add_table(rows=1,cols=dataframe.shape[1])
         table.sytle = 'Table Grid'
@@ -154,3 +159,21 @@ class gen_document():
                 # print(j,list(row))
                 row_cells[j].text = str(list(row)[j])
 
+    def set_heading_styles(self,document):
+        heading_1_style = document.styles['Heading 1']
+        heading_1_style.font.name = 'msyh'
+        heading_1_style._element.rPr.rFonts.set(qn('w:eastAsia'), 'msyh')
+        heading_1_style.font.size = Pt(16)
+        heading_1_style.font.color.rgb = RGBColor(0, 0, 0)  
+
+        heading_2_style = document.styles['Heading 2']
+        heading_2_style.font.name = 'msyh'
+        heading_2_style._element.rPr.rFonts.set(qn('w:eastAsia'), 'msyh')
+        heading_2_style.font.size = Pt(14)
+        heading_2_style.font.color.rgb = RGBColor(0, 0, 0) 
+
+        heading_3_style = document.styles['Heading 3']
+        heading_3_style.font.name = 'msyh'
+        heading_3_style._element.rPr.rFonts.set(qn('w:eastAsia'), 'msyh')
+        heading_3_style.font.size = Pt(12)
+        heading_3_style.font.color.rgb = RGBColor(0, 0, 0)
