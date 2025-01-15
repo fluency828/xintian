@@ -28,7 +28,9 @@ def yaw_result_generate(wtg_ls,data_df,yaw_angle_bin_pn='机舱与风向夹角_b
         target1 = result.iloc[result_valid['K'].idxmin(),:][yaw_angle_bin_pn] #K值最小夹角
         target2 = result.iloc[result_valid['K'].idxmax(),:][yaw_angle_bin_pn] #K值最大夹角
         target3 = result.iloc[result_valid['prob'].idxmax(),:][yaw_angle_bin_pn] #频率最高夹角
-        K_0 = result.loc[result[yaw_angle_bin_pn]==0,'K'].values[0] # 0°夹角K值
+        # print(0 in result[yaw_angle_bin_pn].to_list())
+
+        K_0 = result.loc[result[yaw_angle_bin_pn]==0,'K'].values[0] if 0 in result[yaw_angle_bin_pn].to_list() else 99999 # 0°夹角K值
         K_max= result.iloc[result_valid['K'].idxmax(),:]['K'] # 最高K值
         K_most= result.iloc[result_valid['prob'].idxmax(),:]['K'] # 频率最高夹角对应K值
         K_dif = K_max-K_0 # 最高K值-0°K值

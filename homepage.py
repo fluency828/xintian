@@ -31,7 +31,6 @@ rcParams.update(config)
 plt.rcParams['axes.unicode_minus'] = False
 
 
-
 ########################## 正式开始网页！###################
 st.title('风场数据分析报告')
 
@@ -111,7 +110,7 @@ if not (os.path.exists(json_path)) :
     json_path = st.sidebar.file_uploader('上传测点配置JSON文件',type='json')
     pn_dictionary = json.loads(json_path.read())
 else:
-    f = open(json_path, 'r')
+    f = open(json_path, 'r',encoding='utf-8')
     content = f.read()
     pn_dictionary = json.loads(content)
 

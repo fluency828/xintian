@@ -88,7 +88,8 @@ def plot_scene(full_pw_df,point_name,color_map,ylabel,xlabel,style='default',\
         max_y = y_max
     # print(y_min,y_max,full_pw_df[point_name],full_pw_df.columns)
     ax.set_ylim(y_axis_min,(max_y+5)) #最大、最小值前后延长5
-    y_sep = (y_max-y_axis_min+5)//20
+    y_sep = max((max_y-y_axis_min+5)//20,1)
+    # print(y_sep,y_max-y_axis_min+5)
     y_major_locator = MultipleLocator(y_sep) #设置坐标轴间隔
     ax.yaxis.set_major_locator(y_major_locator)
     # 画出告警值和故障值横线（如果有）

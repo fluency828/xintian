@@ -2835,10 +2835,10 @@ class Guanyun_mingyang_4000():
 
     def torque_speed_warning(self,
                              ticks_x_n = 10,
-                             u_bound = [8.5*1e4],
-                             l_bound=[5810],
-                             r_speed=[305],
-                             r_torque=[100],
+                             u_bound = [24000],
+                             l_bound=[15000],
+                             r_speed=[177],
+                             r_torque=[25],
                              thre=[8]):
         
         self.torque_speed_data = self.gen_data[abs(self.gen_data[self.generator_speed_pn])<2000].reset_index(drop=True)
@@ -2993,8 +2993,9 @@ class Guanyun_mingyang_4000():
     def gen_Large_components_temp(self,
                                   if_notation=True):
         figure_list = []
-        if self.full_pw.shape[0] == 0:
+        if self.full_pw.shape[0] <= 0:
             return figure_list
+        # print(self.full_pw.shape)
         for _,scene_info in self.scene_df.iterrows():
             scene,abnormal,warning,error,abnormal_k = scene_info
             # print(scene)

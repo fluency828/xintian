@@ -70,7 +70,7 @@ def rated_speed_torque(dataframe,X_point_name,y_point_name,title,path,limit_pn,x
     - path: 图片保存路径
     - lower: 做回归的阈值条件中的lower bound
     - upper: 做回归的阈值条件中的upper bound
-    - rated_speed: 额定转速
+    - rated_speed: 额定转速(平方之前)
     - rated_torque: 额定转矩
     -- return --
     返回OLS计算出的斜率。
@@ -81,6 +81,7 @@ def rated_speed_torque(dataframe,X_point_name,y_point_name,title,path,limit_pn,x
     x_max = max(dataframe[X_point_name])
     x_min = min(dataframe[X_point_name])
     detect_data = dataframe[dataframe['ols_flag']==1].reset_index(drop=True)
+    detect_data = detect_data.dropna(subset=[X_point_name, y_point_name]).reset_index(drop=True)
     # print(detect_data)
     # rest_data = dataframe[dataframe['ols_flag']!=1].reset_index(drop=True)
     y_train = detect_data[y_point_name]
